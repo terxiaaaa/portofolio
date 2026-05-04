@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gorga's Portofolio</title>
+<link href="https://api.fontshare.com/v2/css?f[]=sentient@200,400,700,200i,400i&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #050508;
+    --text: #e8c97a;
+    --text-dim: rgba(232,201,122,0.52);
+    --text-faint: rgba(232,201,122,0.28);
+    --accent: #e8a030;
+    --line: rgba(232,201,122,0.14);
+    --fade: 420ms;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--black);
+    color: var(--text);
+    font-family: 'Georgia', serif;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  #topo-canvas {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    opacity: 0.45;
+  }
+
+  nav {
+    position: fixed;
+    top: 28px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 200;
+    background: rgba(8,7,4,0.78);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--line);
+    border-radius: 50px;
+    padding: 10px 40px;
+    display: flex;
+    gap: 40px;
+    white-space: nowrap;
+  }
+
+  nav a {
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 13px;
+    letter-spacing: 0.09em;
+    font-family: 'Sentient', serif;
+    font-weight: 200;
+    transition: color 0.25s;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  nav a:hover { color: rgba(232,201,122,0.85); }
+  nav a.active { color: var(--text); }
+
+  .page {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 110px 10vw 80px;
+    opacity: 0;
+    pointer-events: none;
+    overflow: hidden;
+    transform: translateY(-18px);
+    transition: opacity var(--fade) ease, transform var(--fade) ease;
+  }
+
+  .page.active {
+    opacity: 1;
+    pointer-events: all;
+    transform: translateY(0);
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .page::-webkit-scrollbar { width: 4px; }
+  .page::-webkit-scrollbar-track { background: transparent; }
+  .page::-webkit-scrollbar-thumb { background: rgba(232,201,122,0.22); border-radius: 4px; }
+
+  #page-home { justify-content: center; }
+
+  .social-portals {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 40px;
+  }
+
+  .portal-btn {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: rgba(232,201,122,0.06);
+    border: 1px solid rgba(232,201,122,0.16);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: var(--text);
+    transition: background 0.25s, border-color 0.25s, transform 0.2s;
+  }
+
+  .portal-btn:hover {
+    background: rgba(232,160,48,0.18);
+    border-color: var(--accent);
+    transform: translateY(-3px);
+  }
+
+  .portal-btn svg { width: 18px; height: 18px; fill: currentColor; }
+
+  .home-name {
+    font-family: 'Sentient', serif;
+    font-style: italic;
+    font-size: clamp(36px, 5.2vw, 72px);
+    font-weight: 200;
+    line-height: 1.05;
+    margin-bottom: 18px;
+  }
+
+  .home-sub {
+    font-family: 'Times New Roman', serif;
+    font-size: clamp(13px, 1.4vw, 18px);
+    color: var(--text-dim);
+    letter-spacing: 0.05em;
+    margin-bottom: 28px;
+  }
+
+  .typing-wrapper {
+    font-family: 'Times New Roman', serif;
+    font-size: clamp(14px, 1.4vw, 19px);
+    color: rgba(232,201,122,0.7);
+    min-height: 32px;
+    display: flex;
+    align-items: center;
+  }
+
+  .cursor {
+    display: inline-block;
+    width: 2px;
+    height: 1.1em;
+    background: var(--accent);
+    margin-left: 2px;
+    animation: blink 0.85s step-end infinite;
+  }
+
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+  .section-divider {
+    width: 44px;
+    height: 1px;
+    background: var(--accent);
+    opacity: 0.5;
+    margin-bottom: 36px;
+    flex-shrink: 0;
+  }
+
+  .section-title {
+    font-family: 'Sentient', serif;
+    font-size: clamp(28px, 4vw, 54px);
+    font-weight: 200;
+    margin-bottom: 12px;
+    flex-shrink: 0;
+  }
+
+  .section-sub {
+    font-family: 'Times New Roman', serif;
+    color: var(--text-faint);
+    font-size: 15px;
+    margin-bottom: 48px;
+    letter-spacing: 0.04em;
+    flex-shrink: 0;
+  }
+
+  #page-projects { justify-content: flex-start; }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+    max-width: 1100px;
+  }
+
+  .project-card {
+    background: rgba(232,201,122,0.03);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: border-color 0.3s, transform 0.3s;
+  }
+
+  .project-card:hover {
+    border-color: rgba(232,160,48,0.38);
+    transform: translateY(-5px);
+  }
+
+  .card-img {
+    width: 100%;
+    height: 180px;
+    background: linear-gradient(135deg, #0d0d18, #1b1428);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 1px solid var(--line);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card-body { padding: 22px; }
+
+  .card-title {
+    font-family: 'Sentient', serif;
+    font-size: 19px;
+    font-weight: 200;
+    margin-bottom: 10px;
+    color: var(--text);
+  }
+
+  .card-desc {
+    font-family: 'Times New Roman', serif;
+    font-size: 14px;
+    color: var(--text-dim);
+    line-height: 1.72;
+    margin-bottom: 16px;
+  }
+
+  .card-links { display: flex; gap: 12px; }
+
+  .card-link {
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 13px;
+    font-family: 'Times New Roman', serif;
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: opacity 0.2s;
+  }
+
+  .card-link:hover { opacity: 0.65; }
+
+  #page-writing { align-items: center; text-align: center; justify-content: center; }
+  #page-resume  { align-items: center; text-align: center; justify-content: center; }
+
+  .coming-soon {
+    font-family: 'Sentient', serif;
+    font-style: italic;
+    font-size: clamp(18px, 2.5vw, 32px);
+    font-weight: 200;
+    color: var(--text-faint);
+    margin-top: 8px;
+    letter-spacing: 0.07em;
+  }
+
+  .coming-hint {
+    font-family: 'Times New Roman', serif;
+    font-size: 14px;
+    color: rgba(232,201,122,0.18);
+    margin-top: 14px;
+  }
+
+  #page-about { justify-content: flex-start; }
+
+  .about-layout {
+    display: grid;
+    grid-template-columns: 1fr 290px;
+    gap: 60px;
+    max-width: 980px;
+    align-items: start;
+  }
+
+  .about-name {
+    font-family: 'Sentient', serif;
+    font-size: clamp(22px, 2.9vw, 42px);
+    font-weight: 200;
+    line-height: 1.2;
+    margin-bottom: 26px;
+  }
+
+  .about-text p {
+    font-family: 'Times New Roman', serif;
+    font-size: 15px;
+    color: rgba(232,201,122,0.68);
+    line-height: 1.88;
+    margin-bottom: 20px;
+  }
+
+  .about-text a { color: var(--accent); text-decoration: none; }
+  .about-text a:hover { text-decoration: underline; }
+
+  .about-img-box {
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    overflow: hidden;
+    background: rgba(232,201,122,0.03);
+    aspect-ratio: 3/4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .about-img-box img { width: 100%; height: 100%; object-fit: cover; }
+
+  .site-footer {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 200;
+    font-family: 'Times New Roman', serif;
+    font-size: 11px;
+    color: rgba(232,201,122,0.14);
+    letter-spacing: 0.07em;
+    pointer-events: none;
+  }
+
+  @media (max-width: 768px) {
+    nav { gap: 18px; padding: 10px 20px; }
+    nav a { font-size: 12px; }
+    .page { padding: 100px 22px 60px; }
+    .about-layout { grid-template-columns: 1fr; }
+    .about-img-box { max-width: 220px; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="topo-canvas"></canvas>
+
+<nav>
+  <a data-page="home" class="active">Home</a>
+  <a data-page="projects">Projects</a>
+  <a data-page="writing">Writing</a>
+  <a data-page="about">About</a>
+  <a data-page="resume">Resume</a>
+</nav>
+
+<div class="page active" id="page-home">
+  <div class="social-portals">
+    <a class="portal-btn" href="https://www.linkedin.com/in/gorgasagala/" target="_blank" title="LinkedIn">
+      <svg viewBox="0 0 24 24"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.95v5.66H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.07 2.07 0 1 1 0-4.14 2.07 2.07 0 0 1 0 4.14zm1.78 13.02H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45C23.2 24 24 23.23 24 22.27V1.73C24 .77 23.2 0 22.22 0z"/></svg>
+    </a>
+    <a class="portal-btn" href="https://x.com/terxiaaaa" target="_blank" title="X">
+      <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.747l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg>
+    </a>
+    <a class="portal-btn" href="https://github.com/gorgasagala-cmd" target="_blank" title="GitHub">
+      <svg viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+    </a>
+    <a class="portal-btn" href="https://saweria.co/terxiaaaa" target="_blank" title="Saweria">
+      <svg viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm1.25 14.5h-2.5v-1.25c-1.38-.31-2.25-1.3-2.25-2.5h1.5c0 .69.67 1.25 1.5 1.25s1.5-.56 1.5-1.25c0-.62-.48-1.01-1.6-1.32-1.5-.41-2.9-1.01-2.9-2.68 0-1.18.87-2.17 2.25-2.48V5h2.5v1.22c1.38.31 2.25 1.3 2.25 2.53h-1.5c0-.69-.67-1.25-1.5-1.25s-1.5.56-1.5 1.25c0 .55.38.88 1.6 1.22 1.69.46 2.9 1.14 2.9 2.78 0 1.22-.87 2.21-2.25 2.52V16.5z"/></svg>
+    </a>
+    <a class="portal-btn" href="https://discord.gg/TnXk9fcEGA" target="_blank" title="Discord">
+      <svg viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
+    </a>
+  </div>
+  <h1 class="home-name">Hello, i'm Gorga.</h1>
+  <p class="home-sub">Engineering Physics &nbsp;&commat;&nbsp; tf.itera</p>
+  <div class="typing-wrapper">
+    <span id="typed-text"></span><span class="cursor"></span>
+  </div>
+</div>
+
+<div class="page" id="page-projects">
+  <div class="section-divider"></div>
+  <h2 class="section-title">Projects</h2>
+  <p class="section-sub">All my things i've built. You can see me talk about them on my github.</p>
+  <div class="projects-grid">
+    <div class="project-card">
+      <div class="card-img">
+        <img src="project-bomb.jpg" alt="C4 Bomb Prop" style="width:100%;height:100%;object-fit:cover;object-position:center;">
+      </div>
+      <div class="card-body">
+        <h3 class="card-title">C4 Bomb Prop</h3>
+        <p class="card-desc">A programmable fake bomb prop designed for Airsoft games, built using Arduino Nano. This project simulates a countdown timer with arm/disarm mechanics using a keypad and password system.</p>
+        <div class="card-links">
+          <a class="card-link" href="https://github.com/gorgasagala-cmd/timeticksimulator" target="_blank">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+            GitHub
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="page-writing">
+  <div class="section-divider"></div>
+  <h2 class="section-title">Writing</h2>
+  <p class="coming-soon">Coming soon.</p>
+  <p class="coming-hint"></p>
+</div>
+
+<div class="page" id="page-about">
+  <div class="section-divider"></div>
+  <div class="about-layout">
+    <div>
+      <h2 class="about-name">Gorga Enrou Rorizky Sagala</h2>
+      <div class="about-text">
+        <p>Hello, my name is Gorga. You can easily call me George, joji, or 'terxiaaaa' if you know me from internet. I'm a undergraduate student at Sumatera Institute of Technology, majoring in Engineering Physics, and of course I'm from Indonesia. Currently I am starting to learn about Computing Programs autodidactically in addition to studying at my campus. I am interested in making things related to Software Programs, Computer Hardwares, Game Modding, and Artificial Intelligence. In the Future, I would like to apply all of my knowledge in those areas to Architecture, and Building Construction Industries :)</p>
+        <p>I do whatever it takes to feed my curiosity. I experience deep satisfaction from figuring out those hidden workarounds. I carry this exact mindset into the real world. My eyes scan my surroundings everywhere I go. I look at random structures and wonder how people built them. That specific thought loops in my head all day. I want to deconstruct everything I see to understand the core mechanics. I hope you feel a connection to my perspective after reading this page. Nice to meet you :D</p>
+        <p>If you are interested to work with me, email me for any inquiries at <a href="mailto:gorgasagala1@gmail.com">gorgasagala1@gmail.com</a> &#x1F44B;</p>
+      </div>
+    </div>
+    <div class="about-img-box">
+      <img src="about-photo.jpg" alt="Gorga Sagala">
+    </div>
+  </div>
+</div>
+
+<div class="page" id="page-resume">
+  <div class="section-divider"></div>
+  <h2 class="section-title">Resume</h2>
+  <p class="coming-soon">Coming soon.</p>
+  <p class="coming-hint"></p>
+</div>
+
+<div class="site-footer">&copy; 2026 Gorga Enrou Rorizky Sagala</div>
+
+<script>
+var FADE_MS = 420;
+var current = 'home';
+var busy    = false;
+
+function goTo(id) {
+  if (id === current || busy) return;
+  busy = true;
+
+  var outEl = document.getElementById('page-' + current);
+  var inEl  = document.getElementById('page-' + id);
+
+  outEl.style.opacity   = '0';
+  outEl.style.transform = 'translateY(12px)';
+
+  setTimeout(function() {
+    outEl.classList.remove('active');
+    outEl.style.opacity   = '';
+    outEl.style.transform = '';
+
+    inEl.scrollTop = 0;
+    inEl.style.opacity   = '0';
+    inEl.style.transform = 'translateY(-18px)';
+    inEl.classList.add('active');
+
+    void inEl.offsetHeight;
+
+    inEl.style.opacity   = '1';
+    inEl.style.transform = 'translateY(0)';
+
+    current = id;
+    busy    = false;
+
+    document.querySelectorAll('nav a').forEach(function(a) {
+      a.classList.toggle('active', a.dataset.page === id);
+    });
+  }, FADE_MS);
+}
+
+document.querySelectorAll('nav a').forEach(function(a) {
+  a.addEventListener('click', function() { goTo(a.dataset.page); });
+});
+
+window.addEventListener('load', function() {
+  var home = document.getElementById('page-home');
+  home.style.opacity   = '0';
+  home.style.transform = 'translateY(-18px)';
+  void home.offsetHeight;
+  home.style.opacity   = '1';
+  home.style.transform = 'translateY(0)';
+});
+
+(function() {
+  var canvas = document.getElementById('topo-canvas');
+  var ctx    = canvas.getContext('2d');
+  var W, H, frame = 0;
+  var RES = 200;
+
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  function generate(t) {
+    var Z  = [];
+    var f1 = 0.8 + 0.3 * Math.sin(t * 0.1);
+    var f2 = 0.9 + 0.3 * Math.cos(t * 0.15);
+    var driftX = Math.sin(t * 0.13) * 3.2;
+    var driftY = Math.cos(t * 0.17) * 2.6;
+    for (var j = 0; j < RES; j++) {
+      Z[j] = [];
+      var gy = (j / (RES - 1)) * 12 - 6;
+      for (var i = 0; i < RES; i++) {
+        var gx = (i / (RES - 1)) * 12 - 6;
+        var wx = Math.sin(gy * f1 + t * 0.4) * 1.6 + driftX;
+        var wy = Math.cos(gx * f2 - t * 0.3) * 1.6 + driftY;
+        var nx = gx * 0.7 + wx;
+        var ny = gy * 0.7 + wy;
+        var z  = Math.sin(nx * 1.2 + Math.cos(ny * 0.9 + t * 0.2)) * Math.cos(ny * 1.3 + Math.sin(nx * 0.8 - t * 0.2));
+            z += 0.8 * Math.sin(nx * 0.6 + t * 0.3) * Math.cos(ny * 0.4 - t * 0.1);
+            z += 0.5 * Math.cos(nx * 1.5 - ny * 1.1 + t * 0.4);
+        Z[j][i] = z;
+      }
+    }
+    return Z;
+  }
+
+  function lerp(a, b, va, vb, th) {
+    if (Math.abs(vb - va) < 1e-9) return a;
+    return a + (b - a) * (th - va) / (vb - va);
+  }
+
+  var CASES = {
+    1:[3,0],  2:[0,1],  3:[3,1],  4:[1,2],
+    5:[3,0,1,2], 6:[0,2], 7:[3,2],
+    8:[2,3],  9:[0,2],  10:[0,1,2,3],
+    11:[1,2], 12:[3,1], 13:[0,1], 14:[3,0]
+  };
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    var t  = frame * 0.016;
+    var sx = W / (RES - 1);
+    var sy = H / (RES - 1);
+    var Z  = generate(t);
+    var LEVELS = 12;
+    var zMin = -2.3, zMax = 2.3;
+    ctx.strokeStyle = 'rgba(232,201,122,0.55)';
+    ctx.lineWidth   = 1.0;
+    for (var lv = 0; lv < LEVELS; lv++) {
+      var th = zMin + (lv / (LEVELS - 1)) * (zMax - zMin);
+      ctx.beginPath();
+      for (var j = 0; j < RES - 1; j++) {
+        for (var i = 0; i < RES - 1; i++) {
+          var z00 = Z[j][i],     z10 = Z[j][i + 1];
+          var z01 = Z[j + 1][i], z11 = Z[j + 1][i + 1];
+          var sq  = (z00 >= th ? 1 : 0) | (z10 >= th ? 2 : 0) | (z11 >= th ? 4 : 0) | (z01 >= th ? 8 : 0);
+          if (sq === 0 || sq === 15) continue;
+          var x0 = i * sx, x1 = (i + 1) * sx;
+          var y0 = j * sy, y1 = (j + 1) * sy;
+          var pts = [
+            [lerp(x0, x1, z00, z10, th), y0],
+            [x1,  lerp(y0, y1, z10, z11, th)],
+            [lerp(x0, x1, z01, z11, th), y1],
+            [x0,  lerp(y0, y1, z00, z01, th)]
+          ];
+          var idx = CASES[sq];
+          if (!idx) continue;
+          ctx.moveTo(pts[idx[0]][0], pts[idx[0]][1]);
+          ctx.lineTo(pts[idx[1]][0], pts[idx[1]][1]);
+          if (idx.length === 4) {
+            ctx.moveTo(pts[idx[2]][0], pts[idx[2]][1]);
+            ctx.lineTo(pts[idx[3]][0], pts[idx[3]][1]);
+          }
+        }
+      }
+      ctx.stroke();
+    }
+    frame++;
+    requestAnimationFrame(draw);
+  }
+
+  draw();
+})();
+
+(function() {
+  var texts = [
+    "I'm interested in programs.",
+    "i love cats <3",
+    "i'm obsessed with Game Modding",
+    "I'm a hopeless romantic too :D"
+  ];
+  var el  = document.getElementById('typed-text');
+  var idx = 0, ci = 0, del = false;
+
+  function tick() {
+    var cur = texts[idx];
+    if (!del) {
+      el.textContent = cur.slice(0, ci + 1);
+      ci++;
+      if (ci === cur.length) { del = true; setTimeout(tick, 2400); return; }
+      setTimeout(tick, 110 + Math.random() * 65);
+    } else {
+      el.textContent = cur.slice(0, ci - 1);
+      ci--;
+      if (ci === 0) {
+        del = false;
+        idx = (idx + 1) % texts.length;
+        setTimeout(tick, 520);
+        return;
+      }
+      setTimeout(tick, 52);
+    }
+  }
+
+  tick();
+})();
+</script>
+</body>
+</html>
