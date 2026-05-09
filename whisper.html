@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Whisper — Leave a Message</title>
+  <title>Whisper</title>
   <meta name="description" content="Send an anonymous message. No name, no trace — just your words.">
   <link rel="icon" type="image/png" href="https://cdn-icons-png.magnific.com/512/8623/8623523.png">
   <link href="https://api.fontshare.com/v2/css?f[]=sentient@200,400,700,200i,400i&display=swap" rel="stylesheet">
@@ -43,7 +43,6 @@
       pointer-events: none;
     }
 
-    /* ── NAV ── */
     nav {
       position: fixed;
       top: 28px;
@@ -80,8 +79,6 @@
     nav a.active {
       color: var(--text);
     }
-
-    /* ── MAIN CONTENT ── */
     .main {
       position: relative;
       z-index: 1;
@@ -162,7 +159,6 @@
       margin-bottom: 36px;
     }
 
-    /* ── FORM ── */
     .form-group {
       position: relative;
       margin-bottom: 20px;
@@ -218,7 +214,6 @@
       color: rgba(232, 100, 48, 0.6);
     }
 
-    /* ── SEND BUTTON ── */
     #send-btn {
       width: 100%;
       margin-top: 8px;
@@ -274,7 +269,6 @@
       height: 15px;
     }
 
-    /* ── STATES ── */
     .status-box {
       margin-top: 22px;
       padding: 14px 18px;
@@ -324,7 +318,6 @@
       }
     }
 
-    /* ── DISCLAIMER ── */
     .disclaimer {
       margin-top: 28px;
       font-family: 'Times New Roman', serif;
@@ -335,7 +328,6 @@
       letter-spacing: 0.03em;
     }
 
-    /* ── FOOTER ── */
     .site-footer {
       position: fixed;
       bottom: 20px;
@@ -383,7 +375,6 @@
     <div class="whisper-card">
       <div class="card-glow"></div>
 
-      <!-- envelope icon -->
       <svg class="whisper-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
         <rect x="4" y="10" width="40" height="28" rx="3" stroke="#e8c97a" stroke-width="1.5" fill="none"
           opacity="0.5" />
@@ -391,17 +382,16 @@
           opacity="0.5" />
       </svg>
 
-      <h1 class="whisper-heading">Leave a whisper.</h1>
+      <h1 class="whisper-heading">Leave your messages here</h1>
       <div class="divider-line"></div>
       <p class="whisper-sub">
-        You're anonymous here. No name, no account — just whatever you want to say.
-        A thought, a compliment, a question. It'll reach me.
+        If you have something to say, don't hesitate to say it.
       </p>
 
       <form id="whisper-form" autocomplete="off">
         <div class="form-group">
-          <label class="form-label" for="msg-input">Your message</label>
-          <textarea id="msg-input" name="message" maxlength="500" placeholder="Say anything..."
+          <label class="form-label" for="msg-input"></label>
+          <textarea id="msg-input" name="message" maxlength="500" placeholder="Enter text"
             spellcheck="false"></textarea>
           <div class="char-count"><span id="char-num">0</span> / 500</div>
         </div>
@@ -410,15 +400,14 @@
           <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor">
             <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
           </svg>
-          Send Whisper
+          Send
         </button>
       </form>
 
       <div class="status-box" id="status-box"></div>
 
       <p class="disclaimer">
-        Your message is delivered anonymously. Only your approximate location
-        is recorded — nothing else identifies you.
+        Your message is delivered, thank you for your message.
       </p>
     </div>
   </main>
