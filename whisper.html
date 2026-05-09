@@ -382,7 +382,7 @@
           opacity="0.5" />
       </svg>
 
-      <h1 class="whisper-heading">Leave your messages here</h1>
+      <h1 class="whisper-heading">Whispers.</h1>
       <div class="divider-line"></div>
       <p class="whisper-sub">
         If you have something to say, don't hesitate to say it.
@@ -407,7 +407,6 @@
       <div class="status-box" id="status-box"></div>
 
       <p class="disclaimer">
-        Your message is delivered, thank you for your message.
       </p>
     </div>
   </main>
@@ -415,7 +414,6 @@
   <div class="site-footer">&copy; 2026 Gorga Enrou Rorizky Sagala</div>
 
   <script>
-    /* ── topo canvas (same as portfolio) ── */
     (function () {
       var canvas = document.getElementById('topo-canvas');
       var ctx = canvas.getContext('2d');
@@ -510,7 +508,6 @@
       draw();
     })();
 
-    /* ── char counter ── */
     var textarea = document.getElementById('msg-input');
     var charNum = document.getElementById('char-num');
     var charCount = document.querySelector('.char-count');
@@ -521,7 +518,6 @@
       charCount.classList.toggle('warn', len > 440);
     });
 
-    /* ── form submit ── */
     var form = document.getElementById('whisper-form');
     var sendBtn = document.getElementById('send-btn');
     var statusBox = document.getElementById('status-box');
@@ -557,14 +553,11 @@
         '<div class="spinner"></div> Locating you, just a moment…'
       );
       sendBtn.disabled = true;
-
-      /* Try browser Geolocation first, then fall back to IP-based */
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           function (pos) {
             var lat = pos.coords.latitude.toFixed(4);
             var lon = pos.coords.longitude.toFixed(4);
-            /* Reverse-geocode with a free API */
             fetch('https://nominatim.openstreetmap.org/reverse?lat=' + lat + '&lon=' + lon + '&format=json')
               .then(function (r) { return r.json(); })
               .then(function (data) {
@@ -580,7 +573,6 @@
               });
           },
           function () {
-            /* Permission denied — fall back to IP geolocation */
             ipFallback(msg);
           },
           { timeout: 8000 }
@@ -611,7 +603,7 @@
       charCount.classList.remove('warn');
 
       showStatus('success',
-        '✦ &nbsp;Your whisper was sent. It\'ll reach me.'
+        '✦ &nbsp;Your messages has sent. Thank you for spend your time here.'
       );
 
       sendBtn.disabled = false;
