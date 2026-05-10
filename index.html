@@ -66,17 +66,39 @@
       letter-spacing: 0.09em;
       font-family: 'Sentient', serif;
       font-weight: 200;
-      transition: color 0.25s;
+      transition: color 0.3s, text-shadow 0.3s;
       cursor: pointer;
       user-select: none;
+      position: relative;
+      padding-bottom: 4px;
+    }
+
+    nav a::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 50%;
+      transform: translateX(-50%) scale(0);
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--accent);
+      transition: transform 0.3s ease, opacity 0.3s;
+      opacity: 0;
     }
 
     nav a:hover {
       color: rgba(232, 201, 122, 0.85);
+      text-shadow: 0 0 18px rgba(232, 160, 48, 0.2);
     }
 
     nav a.active {
       color: var(--text);
+    }
+
+    nav a.active::after {
+      transform: translateX(-50%) scale(1);
+      opacity: 1;
     }
 
     .page {
@@ -201,8 +223,8 @@
     .section-divider {
       width: 44px;
       height: 1px;
-      background: var(--accent);
-      opacity: 0.5;
+      background: linear-gradient(90deg, var(--accent), transparent);
+      opacity: 0.6;
       margin-bottom: 36px;
       flex-shrink: 0;
     }
@@ -240,12 +262,13 @@
       border: 1px solid var(--line);
       border-radius: 12px;
       overflow: hidden;
-      transition: border-color 0.3s, transform 0.3s;
+      transition: border-color 0.35s, transform 0.35s, box-shadow 0.35s;
     }
 
     .project-card:hover {
       border-color: rgba(232, 160, 48, 0.38);
       transform: translateY(-5px);
+      box-shadow: 0 12px 40px rgba(232, 160, 48, 0.08), 0 0 0 1px rgba(232, 160, 48, 0.12);
     }
 
     .card-img {
@@ -313,21 +336,79 @@
       justify-content: center;
     }
 
+    .coming-soon-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .coming-icon {
+      position: relative;
+      width: 80px;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .coming-icon svg {
+      width: 36px;
+      height: 36px;
+      fill: none;
+      stroke: var(--text-faint);
+      stroke-width: 1.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .coming-icon .ring {
+      position: absolute;
+      inset: 0;
+      border: 1px solid rgba(232, 201, 122, 0.1);
+      border-radius: 50%;
+      animation: pulse-ring 3s ease-in-out infinite;
+    }
+
+    .coming-icon .ring:nth-child(2) {
+      inset: -8px;
+      animation-delay: 0.8s;
+      border-color: rgba(232, 201, 122, 0.06);
+    }
+
+    .coming-icon .ring:nth-child(3) {
+      inset: -16px;
+      animation-delay: 1.6s;
+      border-color: rgba(232, 201, 122, 0.03);
+    }
+
+    @keyframes pulse-ring {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.08); opacity: 0.5; }
+    }
+
     .coming-soon {
       font-family: 'Sentient', serif;
       font-style: italic;
       font-size: clamp(18px, 2.5vw, 32px);
       font-weight: 200;
       color: var(--text-faint);
-      margin-top: 8px;
       letter-spacing: 0.07em;
     }
 
     .coming-hint {
       font-family: 'Times New Roman', serif;
       font-size: 14px;
-      color: rgba(232, 201, 122, 0.18);
-      margin-top: 14px;
+      color: rgba(232, 201, 122, 0.2);
+      max-width: 340px;
+      line-height: 1.7;
+    }
+
+    .coming-line {
+      width: 32px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0.3;
     }
 
     #page-about {
@@ -376,12 +457,23 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      transition: border-color 0.35s, box-shadow 0.35s;
+    }
+
+    .about-img-box:hover {
+      border-color: rgba(232, 160, 48, 0.25);
+      box-shadow: 0 8px 32px rgba(232, 160, 48, 0.06);
     }
 
     .about-img-box img {
       width: 100%;
       height: 100%;
       object-fit: cover;
+      transition: transform 0.6s ease;
+    }
+
+    .about-img-box:hover img {
+      transform: scale(1.03);
     }
 
     .site-footer {
@@ -432,7 +524,6 @@
     <a data-page="writing">Writing</a>
     <a data-page="about">About</a>
     <a data-page="resume">Resume</a>
-    <a href="whisper.html" style="color:var(--accent);opacity:0.75;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.75'">Whisper</a>
   </nav>
 
   <div class="page active" id="page-home">
@@ -506,8 +597,20 @@
   <div class="page" id="page-writing">
     <div class="section-divider"></div>
     <h2 class="section-title">Writing</h2>
-    <p class="coming-soon">Coming soon.</p>
-    <p class="coming-hint"></p>
+    <div class="coming-soon-wrap">
+      <div class="coming-icon">
+        <div class="ring"></div>
+        <div class="ring"></div>
+        <div class="ring"></div>
+        <svg viewBox="0 0 24 24">
+          <path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>
+          <path d="M15 5l4 4"/>
+        </svg>
+      </div>
+      <div class="coming-line"></div>
+      <p class="coming-soon">Coming soon.</p>
+      <p class="coming-hint">Thoughts, essays, and reflections — brewing quietly.</p>
+    </div>
   </div>
 
   <div class="page" id="page-about">
@@ -540,8 +643,23 @@
   <div class="page" id="page-resume">
     <div class="section-divider"></div>
     <h2 class="section-title">Resume</h2>
-    <p class="coming-soon">Coming soon.</p>
-    <p class="coming-hint"></p>
+    <div class="coming-soon-wrap">
+      <div class="coming-icon">
+        <div class="ring"></div>
+        <div class="ring"></div>
+        <div class="ring"></div>
+        <svg viewBox="0 0 24 24">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/>
+          <line x1="16" y1="17" x2="8" y2="17"/>
+          <polyline points="10 9 9 9 8 9"/>
+        </svg>
+      </div>
+      <div class="coming-line"></div>
+      <p class="coming-soon">Coming soon.</p>
+      <p class="coming-hint">Credentials and experience — currently being compiled.</p>
+    </div>
   </div>
 
   <div class="site-footer">&copy; 2026 Gorga Enrou Rorizky Sagala</div>
