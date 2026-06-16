@@ -325,9 +325,427 @@
     }
 
     #page-writing {
+      justify-content: flex-start;
+    }
+
+    .writing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 24px;
+      max-width: 1100px;
+    }
+
+    .note-card {
+      background: rgba(232, 201, 122, 0.03);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: border-color 0.35s, transform 0.35s, box-shadow 0.35s;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .note-card:hover {
+      border-color: rgba(232, 160, 48, 0.38);
+      transform: translateY(-5px);
+      box-shadow: 0 12px 40px rgba(232, 160, 48, 0.08), 0 0 0 1px rgba(232, 160, 48, 0.12);
+    }
+
+    .note-card-banner {
+      width: 100%;
+      height: 160px;
+      background: linear-gradient(135deg, #0d0d18 0%, #1a1028 40%, #0f1420 100%);
+      display: flex;
       align-items: center;
-      text-align: center;
       justify-content: center;
+      border-bottom: 1px solid var(--line);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .note-card-banner::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 30% 50%, rgba(232, 160, 48, 0.08) 0%, transparent 60%),
+        radial-gradient(ellipse at 70% 30%, rgba(232, 201, 122, 0.05) 0%, transparent 50%);
+    }
+
+    .note-card-banner-icon {
+      position: relative;
+      z-index: 1;
+      width: 48px;
+      height: 48px;
+      fill: none;
+      stroke: var(--text-faint);
+      stroke-width: 1;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      opacity: 0.6;
+    }
+
+    .note-card-body {
+      padding: 22px;
+    }
+
+    .note-card-tag {
+      display: inline-block;
+      font-family: 'Sentient', serif;
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: rgba(232, 160, 48, 0.1);
+      border: 1px solid rgba(232, 160, 48, 0.18);
+      border-radius: 20px;
+      padding: 3px 12px;
+      margin-bottom: 14px;
+    }
+
+    .note-card-title {
+      font-family: 'Sentient', serif;
+      font-size: 18px;
+      font-weight: 200;
+      color: var(--text);
+      margin-bottom: 10px;
+      line-height: 1.4;
+    }
+
+    .note-card-excerpt {
+      font-family: 'Times New Roman', serif;
+      font-size: 14px;
+      color: var(--text-dim);
+      line-height: 1.72;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .note-card-footer {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 18px;
+      font-family: 'Times New Roman', serif;
+      font-size: 12px;
+      color: var(--text-faint);
+      letter-spacing: 0.04em;
+    }
+
+    .note-card-footer svg {
+      width: 13px;
+      height: 13px;
+      fill: none;
+      stroke: var(--text-faint);
+      stroke-width: 1.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* ── Note Detail Overlay ── */
+    .note-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 150;
+      background: rgba(5, 5, 8, 0.92);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      display: flex;
+      justify-content: center;
+      overflow-y: auto;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--fade) ease;
+    }
+
+    .note-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .note-overlay::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .note-overlay::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .note-overlay::-webkit-scrollbar-thumb {
+      background: rgba(232, 201, 122, 0.22);
+      border-radius: 4px;
+    }
+
+    .note-detail {
+      width: 100%;
+      max-width: 1100px;
+      padding: 110px 32px 100px;
+      transform: translateY(18px);
+      transition: transform var(--fade) ease;
+    }
+
+    .note-overlay.open .note-detail {
+      transform: translateY(0);
+    }
+
+    .note-detail-layout {
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      gap: 48px;
+      align-items: start;
+    }
+
+    .note-sidebar {
+      position: sticky;
+      top: 110px;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    .ref-section {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: rgba(232, 201, 122, 0.02);
+      padding: 20px;
+      transition: border-color 0.3s;
+    }
+
+    .ref-section:hover {
+      border-color: rgba(232, 160, 48, 0.25);
+    }
+
+    .ref-section-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .ref-section-header svg {
+      width: 16px;
+      height: 16px;
+      fill: none;
+      stroke: var(--accent);
+      stroke-width: 1.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      flex-shrink: 0;
+    }
+
+    .ref-section-title {
+      font-family: 'Sentient', serif;
+      font-size: 12px;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    .ref-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(232, 201, 122, 0.06);
+      text-decoration: none;
+      transition: opacity 0.25s;
+    }
+
+    .ref-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .ref-item:hover {
+      opacity: 0.7;
+    }
+
+    .ref-item-num {
+      font-family: 'Sentient', serif;
+      font-size: 11px;
+      font-weight: 400;
+      color: var(--accent);
+      opacity: 0.6;
+      min-width: 18px;
+      padding-top: 2px;
+      flex-shrink: 0;
+    }
+
+    .ref-item-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .ref-item-title {
+      font-family: 'Times New Roman', serif;
+      font-size: 13px;
+      color: var(--text-dim);
+      line-height: 1.5;
+      margin-bottom: 4px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .ref-item-source {
+      font-family: 'Times New Roman', serif;
+      font-size: 11px;
+      color: var(--text-faint);
+      letter-spacing: 0.03em;
+    }
+
+    .ref-item-arrow {
+      width: 12px;
+      height: 12px;
+      fill: none;
+      stroke: var(--text-faint);
+      stroke-width: 1.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      flex-shrink: 0;
+      margin-top: 3px;
+      opacity: 0.5;
+    }
+
+    @media (max-width: 860px) {
+      .note-detail-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .note-sidebar {
+        position: static;
+      }
+    }
+
+    .note-back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Sentient', serif;
+      font-size: 13px;
+      font-weight: 200;
+      letter-spacing: 0.08em;
+      color: var(--text-dim);
+      background: none;
+      border: 1px solid var(--line);
+      border-radius: 30px;
+      padding: 8px 20px;
+      cursor: pointer;
+      transition: color 0.3s, border-color 0.3s;
+      margin-bottom: 40px;
+    }
+
+    .note-back-btn:hover {
+      color: var(--text);
+      border-color: rgba(232, 160, 48, 0.38);
+    }
+
+    .note-back-btn svg {
+      width: 14px;
+      height: 14px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .note-detail-tag {
+      display: inline-block;
+      font-family: 'Sentient', serif;
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: rgba(232, 160, 48, 0.1);
+      border: 1px solid rgba(232, 160, 48, 0.18);
+      border-radius: 20px;
+      padding: 3px 12px;
+      margin-bottom: 18px;
+    }
+
+    .note-detail-title {
+      font-family: 'Sentient', serif;
+      font-size: clamp(24px, 3.2vw, 40px);
+      font-weight: 200;
+      line-height: 1.3;
+      margin-bottom: 14px;
+      color: var(--text);
+    }
+
+    .note-detail-meta {
+      font-family: 'Times New Roman', serif;
+      font-size: 13px;
+      color: var(--text-faint);
+      letter-spacing: 0.04em;
+      margin-bottom: 36px;
+    }
+
+    .note-detail-divider {
+      width: 44px;
+      height: 1px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+      opacity: 0.5;
+      margin-bottom: 36px;
+    }
+
+    .note-detail-body {
+      font-family: 'Times New Roman', serif;
+      font-size: 16px;
+      color: rgba(232, 201, 122, 0.72);
+      line-height: 2;
+      letter-spacing: 0.01em;
+    }
+
+    .note-detail-body p {
+      margin-bottom: 22px;
+    }
+
+    .note-detail-body .note-quote {
+      border-left: 2px solid rgba(232, 160, 48, 0.35);
+      padding-left: 20px;
+      margin: 28px 0;
+      font-style: italic;
+      color: rgba(232, 201, 122, 0.58);
+      line-height: 1.9;
+    }
+
+    .note-detail-body .note-list {
+      list-style: none;
+      padding: 0;
+      margin: 12px 0 22px;
+    }
+
+    .note-detail-body .note-list li {
+      position: relative;
+      padding-left: 18px;
+      margin-bottom: 8px;
+    }
+
+    .note-detail-body .note-list li::before {
+      content: '—';
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      opacity: 0.5;
+    }
+
+    .note-detail-body .note-heading {
+      font-family: 'Sentient', serif;
+      font-size: 19px;
+      font-weight: 400;
+      color: var(--text);
+      margin-top: 36px;
+      margin-bottom: 14px;
+      letter-spacing: 0.02em;
     }
 
     #page-resume {
@@ -383,8 +801,17 @@
     }
 
     @keyframes pulse-ring {
-      0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.08); opacity: 0.5; }
+
+      0%,
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+
+      50% {
+        transform: scale(1.08);
+        opacity: 0.5;
+      }
     }
 
     .coming-soon {
@@ -540,7 +967,7 @@
             d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.747l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z" />
         </svg>
       </a>
-      <a class="portal-btn" href="https://github.com/gorgasagala-cmd" target="_blank" title="GitHub">
+      <a class="portal-btn" href="https://github.com/terxiaaaa" target="_blank" title="GitHub">
         <svg viewBox="0 0 24 24">
           <path
             d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
@@ -597,19 +1024,152 @@
   <div class="page" id="page-writing">
     <div class="section-divider"></div>
     <h2 class="section-title">Writing</h2>
-    <div class="coming-soon-wrap">
-      <div class="coming-icon">
-        <div class="ring"></div>
-        <div class="ring"></div>
-        <div class="ring"></div>
-        <svg viewBox="0 0 24 24">
-          <path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>
-          <path d="M15 5l4 4"/>
-        </svg>
+    <p class="section-sub">Research notes, essays, and working thoughts.</p>
+    <div class="writing-grid">
+
+      <div class="note-card" onclick="openNote('note-gacha')">
+        <div class="note-card-banner">
+          <svg class="note-card-banner-icon" viewBox="0 0 24 24">
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+          </svg>
+        </div>
+        <div class="note-card-body">
+          <span class="note-card-tag">Research</span>
+          <h3 class="note-card-title">Engineered Uncertainty in Gacha Systems</h3>
+          <p class="note-card-excerpt">A computational and behavioral comparison of pity and mileage mechanisms —
+            examining how game developers design probabilistic structures that shape player perception and
+            decision-making.</p>
+          <div class="note-card-footer">
+            <svg viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="12 6 12 12 16 14" />
+            </svg>
+            <span>Planning Phase</span>
+          </div>
+        </div>
       </div>
-      <div class="coming-line"></div>
-      <p class="coming-soon">Coming soon.</p>
-      <p class="coming-hint">Thoughts, essays, and reflections — brewing quietly.</p>
+
+    </div>
+  </div>
+
+  <!-- Note Detail Overlay -->
+  <div class="note-overlay" id="note-gacha">
+    <div class="note-detail">
+      <button class="note-back-btn" onclick="closeNote()">
+        <svg viewBox="0 0 24 24">
+          <line x1="19" y1="12" x2="5" y2="12" />
+          <polyline points="12 19 5 12 12 5" />
+        </svg>
+        Back to Writing
+      </button>
+      <span class="note-detail-tag">Research</span>
+      <h2 class="note-detail-title">Engineered Uncertainty in Gacha Systems: A Computational and Behavioral Comparison
+        of Pity and Mileage Mechanisms</h2>
+      <p class="note-detail-meta">Planning Phase &nbsp;·&nbsp; Rangkuman Penelitian</p>
+      <div class="note-detail-divider"></div>
+      <div class="note-detail-layout">
+        <div class="note-detail-body">
+
+          <p>Game gacha modern tidak hanya menggunakan probabilitas acak biasa. Mereka menggunakan mekanisme yang
+            dirancang secara khusus, seperti Pity System (HSR) dan Mileage System (Starsavior). Kedua sistem tersebut
+            memberikan jaminan hadiah, tetapi melalui cara yang berbeda.</p>
+
+          <p>Belum banyak penelitian yang menghubungkan struktur probabilitas yang dirancang pengembang dengan respons
+            psikologis pemain terhadap struktur tersebut. Sebagian penelitian fokus ke matematika gacha, sebagian fokus
+            ke perilaku pemain — sedangkan penelitian ini ingin menghubungkan keduanya.</p>
+
+          <p class="note-heading">Tujuan</p>
+          <ul class="note-list">
+            <li>Memodelkan mekanisme probabilitas pada sistem pity dan mileage.</li>
+            <li>Membandingkan tingkat ketidakpastian yang dihasilkan kedua sistem.</li>
+            <li>Mengidentifikasi bagaimana pemain memersepsikan kedua bentuk ketidakpastian tersebut.</li>
+            <li>Menganalisis dampaknya terhadap keputusan pemain untuk terus melakukan pull.</li>
+          </ul>
+
+          <p class="note-heading">Kontribusi Teknik Fisika</p>
+          <p>Pemodelan sistem stokastik, simulasi Monte Carlo, analisis probabilitas, analisis sensitivitas, dan
+            pengukuran tingkat ketidakpastian.</p>
+
+          <p class="note-heading">Kontribusi Psikologi</p>
+          <p>Persepsi peluang, persepsi progres, gambler's fallacy, sunk-cost effect, dan intensi melanjutkan pull.</p>
+
+          <p class="note-heading">Konsep Inti — Engineered Uncertainty</p>
+          <p>Ketidakpastian yang sengaja dirancang oleh pengembang melalui mekanisme probabilitas tertentu untuk
+            membentuk pengalaman dan keputusan pemain. Konsep ini merupakan kandidat konsep utama paper.</p>
+
+          <p class="note-heading">Hipotesis Utama</p>
+          <ul class="note-list">
+            <li>H1: Mekanisme pity dan mileage menghasilkan struktur ketidakpastian yang berbeda secara matematis.</li>
+            <li>H2: Perbedaan struktur ketidakpastian tersebut menghasilkan persepsi risiko dan progres yang berbeda
+              pada pemain.</li>
+            <li>H3: Perbedaan persepsi tersebut memengaruhi keputusan pemain untuk terus melakukan pull.</li>
+          </ul>
+
+          <div class="note-quote">
+            "Penelitian ini mengkaji bagaimana desain probabilitas yang berbeda pada sistem gacha menciptakan bentuk
+            engineered uncertainty yang berbeda dan bagaimana hal tersebut memengaruhi perilaku pemain."
+          </div>
+
+          <p class="note-heading">Rekomendasi Judul</p>
+          <p><em>"Engineered Uncertainty in Gacha Systems: A Computational and Behavioral Comparison of Pity and
+              Mileage Mechanisms"</em></p>
+          <p>Judul ini bersifat interdisipliner — teknik terlihat, psikologi terlihat, tidak bergantung pada satu game.
+            Judul langsung menunjukkan ada model, ada analisis numerik, ada kontribusi konseptual baru (Engineered
+            Uncertainty), dan ada ruang untuk kolaborasi psikologi tanpa kehilangan identitas Teknik Fisikanya.</p>
+
+        </div>
+
+        <!-- Sidebar: References -->
+        <aside class="note-sidebar">
+
+          <!-- Referensi Artikel -->
+          <div class="ref-section">
+            <div class="ref-section-header">
+              <svg viewBox="0 0 24 24">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+              </svg>
+              <span class="ref-section-title">Referensi Artikel</span>
+            </div>
+            <a class="ref-item"
+              href="https://www.researchgate.net/profile/Fauzi-Akbar-Maulana-Hutabarat/publication/356239073_Perilaku_Konsumtif_Gamers_Genshin_Impact_terhadap_Pembelian_Gacha/links/6a0bcb8d39e45e75a6dd07ce/Perilaku-Konsumtif-Gamers-Genshin-Impact-terhadap-Pembelian-Gacha.pdf"
+              target="_blank">
+              <span class="ref-item-num">01</span>
+              <div class="ref-item-info">
+                <div class="ref-item-title">Perilaku Konsumtif Gamers Genshin Impact terhadap Pembelian Gacha</div>
+                <div class="ref-item-source">ResearchGate · Fauzi Akbar Maulana Hutabarat</div>
+              </div>
+              <svg class="ref-item-arrow" viewBox="0 0 24 24">
+                <line x1="7" y1="17" x2="17" y2="7" />
+                <polyline points="7 7 17 7 17 17" />
+              </svg>
+            </a>
+          </div>
+
+          <!-- Referensi Video -->
+          <div class="ref-section">
+            <div class="ref-section-header">
+              <svg viewBox="0 0 24 24">
+                <polygon points="5 3 19 12 5 21 5 3" />
+              </svg>
+              <span class="ref-section-title">Referensi Video</span>
+            </div>
+            <a class="ref-item" href="https://youtu.be/LopKBNZjAB0" target="_blank">
+              <span class="ref-item-num">01</span>
+              <div class="ref-item-info">
+                <div class="ref-item-title">Gacha Game Mechanics Explained</div>
+                <div class="ref-item-source">YouTube</div>
+              </div>
+              <svg class="ref-item-arrow" viewBox="0 0 24 24">
+                <line x1="7" y1="17" x2="17" y2="7" />
+                <polyline points="7 7 17 7 17 17" />
+              </svg>
+            </a>
+          </div>
+
+        </aside>
+      </div>
     </div>
   </div>
 
@@ -649,11 +1209,11 @@
         <div class="ring"></div>
         <div class="ring"></div>
         <svg viewBox="0 0 24 24">
-          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-          <polyline points="14 2 14 8 20 8"/>
-          <line x1="16" y1="13" x2="8" y2="13"/>
-          <line x1="16" y1="17" x2="8" y2="17"/>
-          <polyline points="10 9 9 9 8 9"/>
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+          <polyline points="14 2 14 8 20 8" />
+          <line x1="16" y1="13" x2="8" y2="13" />
+          <line x1="16" y1="17" x2="8" y2="17" />
+          <polyline points="10 9 9 9 8 9" />
         </svg>
       </div>
       <div class="coming-line"></div>
@@ -667,6 +1227,28 @@
   <script>
     var FADE_MS = 420;
     var current = 'home';
+    var noteOpen = false;
+
+    function openNote(id) {
+      var overlay = document.getElementById(id);
+      if (!overlay || noteOpen) return;
+      noteOpen = true;
+      overlay.classList.add('open');
+      overlay.scrollTop = 0;
+    }
+
+    function closeNote() {
+      var open = document.querySelector('.note-overlay.open');
+      if (!open) return;
+      open.style.opacity = '0';
+      open.querySelector('.note-detail').style.transform = 'translateY(18px)';
+      setTimeout(function () {
+        open.classList.remove('open');
+        open.style.opacity = '';
+        open.querySelector('.note-detail').style.transform = '';
+        noteOpen = false;
+      }, FADE_MS);
+    }
     var busy = false;
 
     function goTo(id) {
