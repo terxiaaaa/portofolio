@@ -1,0 +1,616 @@
+const FADE_MS = 420;
+let current = 'home';
+let noteOpen = false;
+let busy = false;
+
+const $ = (sel, ctx = document) => ctx.querySelector(sel);
+const $$ = (sel, ctx = document) => [...ctx.querySelectorAll(sel)];
+
+// ─── Detect mobile/touch device ───
+
+const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+// ─── Focus Trap (accessibility for modal) ───
+
+function trapFocus(container) {
+  const focusable = $$(
+    'a[href], button, textarea, input, select, [tabindex]:not([tabindex="-1"])',
+    container
+  ).filter(el => !el.disabled && el.offsetParent !== null);
+
+  if (!focusable.length) return;
+
+  const first = focusable[0];
+  const last = focusable[focusable.length - 1];
+
+  function handler(e) {
+    if (e.key !== 'Tab') return;
+    if (e.shiftKey) {
+      if (document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      }
+    } else {
+      if (document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+  }
+
+  container.addEventListener('keydown', handler);
+  first.focus();
+
+  return () => container.removeEventListener('keydown', handler);
+}
+
+let releaseTrap = null;
+
+// ─── Note overlay ───
+
+function openNote(id) {
+  const overlay = $(`#${id}`);
+  if (!overlay || noteOpen) return;
+  noteOpen = true;
+  overlay.hidden = false;
+  overlay.classList.add('open');
+  overlay.scrollTop = 0;
+  document.body.style.overflow = 'hidden';
+
+  // Trap focus inside the modal
+  requestAnimationFrame(() => {
+    releaseTrap = trapFocus(overlay);
+  });
+}
+
+function closeNote() {
+  const open = $('.note-overlay.open');
+  if (!open) return;
+
+  // Release focus trap
+  if (releaseTrap) {
+    releaseTrap();
+    releaseTrap = null;
+  }
+
+  open.style.opacity = '0';
+  open.querySelector('.note-detail').style.transform = 'translateY(18px)';
+  setTimeout(() => {
+    open.classList.remove('open');
+    open.style.opacity = '';
+    open.querySelector('.note-detail').style.transform = '';
+    open.hidden = true;
+    noteOpen = false;
+    document.body.style.overflow = '';
+
+    // Return focus to the card that opened this note
+    const noteId = open.id;
+    const trigger = $(`.note-card[data-note="${noteId}"]`);
+    if (trigger) trigger.focus();
+  }, FADE_MS);
+}
+
+// ─── Nav pill indicator ───
+
+const navPill = $('.nav-pill');
+
+function updatePill(animate = true) {
+  const activeLink = $('nav a.active');
+  if (!activeLink || !navPill) return;
+
+  const navRect = nav.getBoundingClientRect();
+  const linkRect = activeLink.getBoundingClientRect();
+  const left = linkRect.left - navRect.left;
+  const width = linkRect.width;
+
+  if (!animate) {
+    navPill.style.transition = 'none';
+  }
+
+  navPill.style.left = `${left}px`;
+  navPill.style.width = `${width}px`;
+
+  if (!animate) {
+    void navPill.offsetHeight;
+    navPill.style.transition = '';
+  }
+}
+
+// Update pill on window resize
+window.addEventListener('resize', () => {
+  updatePill(false);
+}, { passive: true });
+
+// ─── Page navigation ───
+
+function goTo(id) {
+  if (id === current || busy) return;
+  busy = true;
+
+  const outEl = $(`#page-${current}`);
+  const inEl = $(`#page-${id}`);
+
+  outEl.style.opacity = '0';
+  outEl.style.transform = 'translateY(12px)';
+
+  setTimeout(() => {
+    outEl.classList.remove('active');
+    outEl.style.opacity = '';
+    outEl.style.transform = '';
+    outEl.hidden = true;
+
+    inEl.hidden = false;
+    inEl.scrollTop = 0;
+    inEl.style.opacity = '0';
+    inEl.style.transform = 'translateY(-18px)';
+    inEl.classList.add('active');
+
+    void inEl.offsetHeight;
+
+    inEl.style.opacity = '1';
+    inEl.style.transform = 'translateY(0)';
+
+    const prev = current;
+    current = id;
+    busy = false;
+
+    $$('nav a').forEach(a => {
+      const isActive = a.dataset.page === id;
+      a.classList.toggle('active', isActive);
+      a.setAttribute('aria-current', isActive ? 'page' : 'false');
+    });
+
+    updatePill();
+
+    // Pause typed text when leaving home
+    if (TypedText) {
+      if (id === 'home') TypedText.resume();
+      else TypedText.pause();
+    }
+
+    // Update viewport height on mobile after page transition
+    if (isMobile) {
+      setTimeout(() => {
+        const vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty('--vh', `${vh}px`);
+      }, 50);
+    }
+  }, FADE_MS);
+}
+
+const nav = $('nav');
+nav.addEventListener('click', e => {
+  const link = e.target.closest('a[data-page]');
+  if (link) goTo(link.dataset.page);
+});
+
+// Add touch feedback for nav items on mobile
+if (isTouch) {
+  $$('nav a').forEach(link => {
+    link.addEventListener('touchstart', () => {
+      link.style.transform = 'scale(0.95)';
+    }, { passive: true });
+
+    link.addEventListener('touchend', () => {
+      link.style.transform = '';
+    }, { passive: true });
+
+    link.addEventListener('touchcancel', () => {
+      link.style.transform = '';
+    }, { passive: true });
+  });
+}
+
+nav.addEventListener('keydown', e => {
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault();
+    const link = e.target.closest('a[data-page]');
+    if (link) goTo(link.dataset.page);
+  }
+
+  // Arrow key navigation between nav items
+  const links = $$('a[data-page]', nav);
+  const idx = links.indexOf(e.target);
+  if (idx === -1) return;
+
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+    e.preventDefault();
+    links[(idx + 1) % links.length].focus();
+  } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+    e.preventDefault();
+    links[(idx - 1 + links.length) % links.length].focus();
+  }
+});
+
+// Add touch feedback for project and note cards on mobile
+if (isTouch) {
+  const addTouchFeedback = (selector) => {
+    $$(selector).forEach(card => {
+      card.addEventListener('touchstart', () => {
+        card.style.transform = 'scale(0.98)';
+      }, { passive: true });
+
+      card.addEventListener('touchend', () => {
+        card.style.transform = '';
+      }, { passive: true });
+
+      card.addEventListener('touchcancel', () => {
+        card.style.transform = '';
+      }, { passive: true });
+    });
+  };
+
+  // Apply touch feedback after page loads
+  window.addEventListener('load', () => {
+    addTouchFeedback('.project-card');
+    addTouchFeedback('.note-card');
+    addTouchFeedback('.portal-btn');
+  });
+}
+
+// ─── Writing grid ───
+
+const writingGrid = $('.writing-grid');
+if (writingGrid) {
+  writingGrid.addEventListener('click', e => {
+    const card = e.target.closest('.note-card');
+    if (card?.dataset.note) openNote(card.dataset.note);
+  });
+
+  writingGrid.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      const card = e.target.closest('.note-card');
+      if (card?.dataset.note) openNote(card.dataset.note);
+    }
+  });
+
+  // Add touch feedback for note cards on mobile
+  if (isTouch) {
+    $$('.note-card').forEach(card => {
+      card.addEventListener('touchstart', () => {
+        card.style.transform = 'scale(0.98)';
+      }, { passive: true });
+
+      card.addEventListener('touchend', () => {
+        card.style.transform = '';
+      }, { passive: true });
+
+      card.addEventListener('touchcancel', () => {
+        card.style.transform = '';
+      }, { passive: true });
+    });
+  }
+}
+
+// ─── Global keyboard shortcuts ───
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && noteOpen) closeNote();
+});
+
+const overlays = $$('.note-overlay');
+overlays.forEach(overlay => {
+  overlay.addEventListener('click', e => {
+    if (e.target === overlay) closeNote();
+  });
+
+  // Touch swipe to close on mobile
+  if (isTouch) {
+    let startY = 0;
+    let startX = 0;
+    let startTime = 0;
+
+    overlay.addEventListener('touchstart', e => {
+      startY = e.touches[0].clientY;
+      startX = e.touches[0].clientX;
+      startTime = Date.now();
+    }, { passive: true });
+
+    overlay.addEventListener('touchend', e => {
+      const endY = e.changedTouches[0].clientY;
+      const endX = e.changedTouches[0].clientX;
+      const diffY = endY - startY;
+      const diffX = endX - startX;
+      const elapsed = Date.now() - startTime;
+
+      // Swipe down to close (minimum 100px, more vertical than horizontal, within 300ms)
+      if (diffY > 100 && Math.abs(diffY) > Math.abs(diffX) * 1.5 && elapsed < 300) {
+        closeNote();
+      }
+    }, { passive: true });
+  }
+});
+
+// ─── Page load animation ───
+
+const home = $('#page-home');
+window.addEventListener('load', () => {
+  home.style.opacity = '0';
+  home.style.transform = 'translateY(-18px)';
+  void home.offsetHeight;
+  home.style.opacity = '1';
+  home.style.transform = 'translateY(0)';
+
+  // Position nav pill on load
+  updatePill(false);
+});
+
+// ─── Topographic canvas animation ───
+
+const TopoAnimation = (() => {
+  const canvas = $('#topo-canvas');
+  if (!canvas) return null;
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (prefersReduced) return null;
+
+  const ctx = canvas.getContext('2d');
+  let W, H, frame = 0;
+  const RES = isMobile ? 80 : 120;
+  const LEVELS = isMobile ? 7 : 10;
+  const zMin = -2.3, zMax = 2.3;
+  let animId = null;
+  let lastTime = 0;
+  const FPS_CAP = isMobile ? 24 : 30;
+  const frameInterval = 1000 / FPS_CAP;
+
+  const CASES = {
+    1: [3, 0], 2: [0, 1], 3: [3, 1], 4: [1, 2],
+    5: [3, 0, 1, 2], 6: [0, 2], 7: [3, 2],
+    8: [2, 3], 9: [0, 2], 10: [0, 1, 2, 3],
+    11: [1, 2], 12: [3, 1], 13: [0, 1], 14: [3, 0]
+  };
+
+  // Pre-allocate Z buffer — avoid GC churn every frame
+  const Z = new Array(RES);
+  for (let j = 0; j < RES; j++) {
+    Z[j] = new Float32Array(RES);
+  }
+
+  function resize() {
+    const dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 2);
+    W = window.innerWidth;
+    H = window.innerHeight;
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    canvas.style.width = `${W}px`;
+    canvas.style.height = `${H}px`;
+    ctx.scale(dpr, dpr);
+  }
+
+  function lerp(a, b, va, vb, th) {
+    if (Math.abs(vb - va) < 1e-9) return a;
+    return a + (b - a) * (th - va) / (vb - va);
+  }
+
+  function generate(t) {
+    const f1 = 0.8 + 0.3 * Math.sin(t * 0.1);
+    const f2 = 0.9 + 0.3 * Math.cos(t * 0.15);
+    const driftX = Math.sin(t * 0.13) * 3.2;
+    const driftY = Math.cos(t * 0.17) * 2.6;
+
+    for (let j = 0; j < RES; j++) {
+      const gy = (j / (RES - 1)) * 12 - 6;
+      for (let i = 0; i < RES; i++) {
+        const gx = (i / (RES - 1)) * 12 - 6;
+        const wx = Math.sin(gy * f1 + t * 0.4) * 1.6 + driftX;
+        const wy = Math.cos(gx * f2 - t * 0.3) * 1.6 + driftY;
+        const nx = gx * 0.7 + wx;
+        const ny = gy * 0.7 + wy;
+        let z = Math.sin(nx * 1.2 + Math.cos(ny * 0.9 + t * 0.2)) * Math.cos(ny * 1.3 + Math.sin(nx * 0.8 - t * 0.2));
+        z += 0.8 * Math.sin(nx * 0.6 + t * 0.3) * Math.cos(ny * 0.4 - t * 0.1);
+        z += 0.5 * Math.cos(nx * 1.5 - ny * 1.1 + t * 0.4);
+        Z[j][i] = z;
+      }
+    }
+    return Z;
+  }
+
+  function draw(timestamp) {
+    animId = requestAnimationFrame(draw);
+
+    const elapsed = timestamp - lastTime;
+    if (elapsed < frameInterval) return;
+    lastTime = timestamp - (elapsed % frameInterval);
+
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    const t = frame * 0.016;
+    const sx = W / (RES - 1);
+    const sy = H / (RES - 1);
+    const Zdata = generate(t);
+
+    ctx.strokeStyle = 'rgba(232,201,122,0.55)';
+    ctx.lineWidth = 1.0;
+    ctx.beginPath();
+
+    for (let lv = 0; lv < LEVELS; lv++) {
+      const th = zMin + (lv / (LEVELS - 1)) * (zMax - zMin);
+      for (let j = 0; j < RES - 1; j++) {
+        for (let i = 0; i < RES - 1; i++) {
+          const z00 = Zdata[j][i], z10 = Zdata[j][i + 1];
+          const z01 = Zdata[j + 1][i], z11 = Zdata[j + 1][i + 1];
+          const sq = (z00 >= th ? 1 : 0) | (z10 >= th ? 2 : 0) | (z11 >= th ? 4 : 0) | (z01 >= th ? 8 : 0);
+          if (sq === 0 || sq === 15) continue;
+
+          const x0 = i * sx, x1 = (i + 1) * sx;
+          const y0 = j * sy, y1 = (j + 1) * sy;
+          const pts = [
+            [lerp(x0, x1, z00, z10, th), y0],
+            [x1, lerp(y0, y1, z10, z11, th)],
+            [lerp(x0, x1, z01, z11, th), y1],
+            [x0, lerp(y0, y1, z00, z01, th)]
+          ];
+          const idx = CASES[sq];
+          if (!idx) continue;
+          ctx.moveTo(pts[idx[0]][0], pts[idx[0]][1]);
+          ctx.lineTo(pts[idx[1]][0], pts[idx[1]][1]);
+          if (idx.length === 4) {
+            ctx.moveTo(pts[idx[2]][0], pts[idx[2]][1]);
+            ctx.lineTo(pts[idx[3]][0], pts[idx[3]][1]);
+          }
+        }
+      }
+    }
+    ctx.stroke();
+    frame++;
+  }
+
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      resize();
+      updatePill(false);
+    }, isMobile ? 150 : 100);
+  }, { passive: true });
+
+  // Also handle orientation change on mobile
+  window.addEventListener('orientationchange', () => {
+    setTimeout(() => {
+      resize();
+      updatePill(false);
+    }, 200);
+  }, { passive: true });
+
+  resize();
+  animId = requestAnimationFrame(draw);
+
+  return {
+    pause() { if (animId) cancelAnimationFrame(animId); animId = null; },
+    resume() { if (!animId) animId = requestAnimationFrame(draw); }
+  };
+})();
+
+// ─── Typed text effect ───
+
+const TypedText = (() => {
+  const el = $('#typed-text');
+  if (!el) return null;
+
+  const texts = [
+    "I'm interested in programs.",
+    "i love cats <3",
+    "i'm obsessed with Game Modding",
+    "I'm a hopeless romantic too :D",
+    "currently exploring AI & ML",
+    "building things that matter.",
+    "physics meets code."
+  ];
+
+  let idx = 0, ci = 0, del = false;
+  let timer = null;
+  let paused = false;
+
+  const tick = () => {
+    if (paused) return;
+
+    const cur = texts[idx];
+    if (!del) {
+      el.textContent = cur.slice(0, ci + 1);
+      ci++;
+      if (ci === cur.length) {
+        del = true;
+        timer = setTimeout(tick, 2400);
+        return;
+      }
+      timer = setTimeout(tick, 110 + Math.random() * 65);
+    } else {
+      el.textContent = cur.slice(0, ci - 1);
+      ci--;
+      if (ci === 0) {
+        del = false;
+        idx = (idx + 1) % texts.length;
+        timer = setTimeout(tick, 520);
+        return;
+      }
+      timer = setTimeout(tick, 52);
+    }
+  };
+
+  tick();
+
+  return {
+    pause() {
+      paused = true;
+      if (timer) { clearTimeout(timer); timer = null; }
+    },
+    resume() {
+      if (!paused) return;
+      paused = false;
+      tick();
+    }
+  };
+})();
+
+// ─── Visibility change: pause animations when tab hidden ───
+
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    if (TopoAnimation) TopoAnimation.pause();
+    if (TypedText) TypedText.pause();
+  } else {
+    if (TopoAnimation) TopoAnimation.resume();
+    if (TypedText && current === 'home') TypedText.resume();
+  }
+});
+
+// ─── Performance optimization for mobile ───
+
+if (isMobile) {
+  // Reduce animation complexity on mobile
+  document.documentElement.style.setProperty('--fade', '300ms');
+
+  // Debounce scroll events
+  let scrollTimeout;
+  window.addEventListener('scroll', () => {
+    document.body.classList.add('is-scrolling');
+    clearTimeout(scrollTimeout);
+    scrollTimeout = setTimeout(() => {
+      document.body.classList.remove('is-scrolling');
+    }, 100);
+  }, { passive: true });
+}
+
+// ─── Handle viewport height on mobile ───
+
+if (isMobile) {
+  const setVH = () => {
+    const vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty('--vh', `${vh}px`);
+  };
+
+  // Set initial VH
+  setVH();
+
+  // Update on resize (handles address bar show/hide)
+  window.addEventListener('resize', setVH, { passive: true });
+
+  // Update on orientation change
+  window.addEventListener('orientationchange', () => {
+    setTimeout(setVH, 100);
+  }, { passive: true });
+
+  // Also update on scroll (for some mobile browsers)
+  let scrollTimer;
+  window.addEventListener('scroll', () => {
+    clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(setVH, 100);
+  }, { passive: true });
+
+  // Prevent double-tap zoom on mobile
+  let lastTouchEnd = 0;
+  document.addEventListener('touchend', e => {
+    const now = Date.now();
+    if (now - lastTouchEnd <= 300) {
+      e.preventDefault();
+    }
+    lastTouchEnd = now;
+  }, false);
+}
