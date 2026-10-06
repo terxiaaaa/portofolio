@@ -164,7 +164,7 @@
       <p class="section-sub">Research notes, essays, and working thoughts.</p>
       <div class="writing-grid" role="list" aria-label="Writing entries">
 
-        <article class="note-card note-card-template" role="listitem">
+        <article class="note-card" role="listitem" tabindex="0" data-note="note-template">
           <div class="note-card-banner" aria-hidden="true">
             <svg class="note-card-banner-icon" viewBox="0 0 24 24" aria-hidden="true">
               <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
@@ -188,7 +188,7 @@
       </div>
     </div>
 
-    <div class="note-overlay" id="note-gacha" role="dialog" aria-modal="true" aria-labelledby="note-gacha-title" hidden>
+    <div class="note-overlay" id="note-template" role="dialog" aria-modal="true" aria-labelledby="note-template-title" hidden>
       <div class="note-detail">
         <button class="note-back-btn" onclick="closeNote()" aria-label="Close note and return to writing">
           <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -197,65 +197,29 @@
           </svg>
           Back to Writing
         </button>
-        <span class="note-detail-tag">Research</span>
-        <h2 class="note-detail-title" id="note-gacha-title">Engineered Uncertainty in Gacha Systems: A Computational and
-          Behavioral Comparison
-          of Pity and Mileage Mechanisms</h2>
-        <p class="note-detail-meta">Planning Phase &nbsp;·&nbsp; Rangkuman Penelitian</p>
+        <span class="note-detail-tag">Template</span>
+        <h2 class="note-detail-title" id="note-template-title">New Writing</h2>
+        <p class="note-detail-meta">Draft &nbsp;·&nbsp; Writing Template</p>
         <div class="note-detail-divider"></div>
         <div class="note-detail-layout">
           <div class="note-detail-body">
+            <p>Tulis pembuka atau ringkasan singkat tulisanmu di sini.</p>
 
-            <p>Game gacha modern tidak hanya menggunakan probabilitas acak biasa. Mereka menggunakan mekanisme yang
-              dirancang secara khusus, seperti Pity System (HSR) dan Mileage System (Starsavior). Kedua sistem tersebut
-              memberikan jaminan hadiah, tetapi melalui cara yang berbeda.</p>
+            <h3 class="note-heading">Judul Sementara</h3>
+            <p>[Masukkan judul tulisan]</p>
 
-            <p>Belum banyak penelitian yang menghubungkan struktur probabilitas yang dirancang pengembang dengan respons
-              psikologis pemain terhadap struktur tersebut. Sebagian penelitian fokus ke matematika gacha, sebagian
-              fokus
-              ke perilaku pemain — sedangkan penelitian ini ingin menghubungkan keduanya.</p>
+            <h3 class="note-heading">Pertanyaan Utama</h3>
+            <p>[Apa yang ingin dibahas atau dijawab?]</p>
 
-            <h3 class="note-heading">Tujuan</h3>
+            <h3 class="note-heading">Outline</h3>
             <ul class="note-list">
-              <li>Memodelkan mekanisme probabilitas pada sistem pity dan mileage.</li>
-              <li>Membandingkan tingkat ketidakpastian yang dihasilkan kedua sistem.</li>
-              <li>Mengidentifikasi bagaimana pemain memersepsikan kedua bentuk ketidakpastian tersebut.</li>
-              <li>Menganalisis dampaknya terhadap keputusan pemain untuk terus melakukan pull.</li>
+              <li>[Poin atau bagian pertama]</li>
+              <li>[Poin atau bagian kedua]</li>
+              <li>[Poin atau bagian ketiga]</li>
             </ul>
 
-            <h3 class="note-heading">Kontribusi Teknik Fisika</h3>
-            <p>Pemodelan sistem stokastik, simulasi Monte Carlo, analisis probabilitas, analisis sensitivitas, dan
-              pengukuran tingkat ketidakpastian.</p>
-
-            <h3 class="note-heading">Kontribusi Psikologi</h3>
-            <p>Persepsi peluang, persepsi progres, gambler's fallacy, sunk-cost effect, dan intensi melanjutkan pull.
-            </p>
-
-            <h3 class="note-heading">Konsep Inti — Engineered Uncertainty</h3>
-            <p>Ketidakpastian yang sengaja dirancang oleh pengembang melalui mekanisme probabilitas tertentu untuk
-              membentuk pengalaman dan keputusan pemain. Konsep ini merupakan kandidat konsep utama paper.</p>
-
-            <h3 class="note-heading">Hipotesis Utama</h3>
-            <ul class="note-list">
-              <li>H1: Mekanisme pity dan mileage menghasilkan struktur ketidakpastian yang berbeda secara matematis.
-              </li>
-              <li>H2: Perbedaan struktur ketidakpastian tersebut menghasilkan persepsi risiko dan progres yang berbeda
-                pada pemain.</li>
-              <li>H3: Perbedaan persepsi tersebut memengaruhi keputusan pemain untuk terus melakukan pull.</li>
-            </ul>
-
-            <blockquote class="note-quote">
-              "Penelitian ini mengkaji bagaimana desain probabilitas yang berbeda pada sistem gacha menciptakan bentuk
-              engineered uncertainty yang berbeda dan bagaimana hal tersebut memengaruhi perilaku pemain."
-            </blockquote>
-
-            <h3 class="note-heading">Rekomendasi Judul</h3>
-            <p><em>"Engineered Uncertainty in Gacha Systems: A Computational and Behavioral Comparison of Pity and
-                Mileage Mechanisms"</em></p>
-            <p>Judul ini bersifat interdisipliner — teknik terlihat, psikologi terlihat, tidak bergantung pada satu
-              game.
-              Judul langsung menunjukkan ada model, ada analisis numerik, ada kontribusi konseptual baru (Engineered
-              Uncertainty), dan ada ruang untuk kolaborasi psikologi tanpa kehilangan identitas Teknik Fisikanya.</p>
+            <h3 class="note-heading">Catatan</h3>
+            <p>[Tambahkan isi, referensi, atau catatan kerja di sini.]</p>
 
           </div>
 
@@ -269,19 +233,13 @@
                 </svg>
                 <span class="ref-section-title">Referensi Artikel</span>
               </div>
-              <a class="ref-item"
-                href="https://www.researchgate.net/profile/Fauzi-Akbar-Maulana-Hutabarat/publication/356239073_Perilaku_Konsumtif_Gamers_Genshin_Impact_terhadap_Pembelian_Gacha/links/6a0bcb8d39e45e75a6dd07ce/Perilaku-Konsumtif-Gamers-Genshin-Impact-terhadap-Pembelian-Gacha.pdf"
-                target="_blank" rel="noopener noreferrer">
+              <div class="ref-item">
                 <span class="ref-item-num">01</span>
                 <div class="ref-item-info">
-                  <div class="ref-item-title">Perilaku Konsumtif Gamers Genshin Impact terhadap Pembelian Gacha</div>
-                  <div class="ref-item-source">ResearchGate · Fauzi Akbar Maulana Hutabarat</div>
+                  <div class="ref-item-title">[Tambahkan referensi]</div>
+                  <div class="ref-item-source">Sumber · Penulis</div>
                 </div>
-                <svg class="ref-item-arrow" viewBox="0 0 24 24" aria-hidden="true">
-                  <line x1="7" y1="17" x2="17" y2="7" />
-                  <polyline points="7 7 17 7 17 17" />
-                </svg>
-              </a>
+              </div>
             </div>
 
             <div class="ref-section">
@@ -289,19 +247,15 @@
                 <svg viewBox="0 0 24 24" aria-hidden="true">
                   <polygon points="5 3 19 12 5 21 5 3" />
                 </svg>
-                <span class="ref-section-title">Referensi Video</span>
+                <span class="ref-section-title">Referensi Lainnya</span>
               </div>
-              <a class="ref-item" href="https://youtu.be/LopKBNZjAB0" target="_blank" rel="noopener noreferrer">
+              <div class="ref-item">
                 <span class="ref-item-num">01</span>
                 <div class="ref-item-info">
-                  <div class="ref-item-title">Gacha Game Mechanics Explained</div>
-                  <div class="ref-item-source">YouTube</div>
+                  <div class="ref-item-title">[Tambahkan tautan]</div>
+                  <div class="ref-item-source">Platform atau sumber</div>
                 </div>
-                <svg class="ref-item-arrow" viewBox="0 0 24 24" aria-hidden="true">
-                  <line x1="7" y1="17" x2="17" y2="7" />
-                  <polyline points="7 7 17 7 17 17" />
-                </svg>
-              </a>
+              </div>
             </div>
 
           </aside>

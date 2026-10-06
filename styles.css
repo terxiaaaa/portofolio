@@ -397,16 +397,6 @@ nav a.active {
   user-select: none;
 }
 
-.note-card-template {
-  cursor: default;
-}
-
-.note-card-template:hover {
-  border-color: var(--line);
-  transform: none;
-  box-shadow: none;
-}
-
 .note-card:hover {
   border-color: rgba(232, 160, 48, 0.38);
   transform: translateY(-5px);
