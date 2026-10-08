@@ -712,17 +712,18 @@ document.addEventListener('visibilitychange', () => {
 if (isMobile) {
   // Reduce animation complexity on mobile
   document.documentElement.style.setProperty('--fade', '300ms');
-
-  // Debounce scroll events
-  let scrollTimeout;
-  window.addEventListener('scroll', () => {
-    document.body.classList.add('is-scrolling');
-    clearTimeout(scrollTimeout);
-    scrollTimeout = setTimeout(() => {
-      document.body.classList.remove('is-scrolling');
-    }, 100);
-  }, { passive: true });
 }
+
+let scrollTimeout;
+window.addEventListener('scroll', () => {
+  document.body.classList.add('is-scrolling');
+  if (TopoAnimation) TopoAnimation.pause();
+  clearTimeout(scrollTimeout);
+  scrollTimeout = setTimeout(() => {
+    document.body.classList.remove('is-scrolling');
+    if (!document.hidden && TopoAnimation) TopoAnimation.resume();
+  }, 140);
+}, { passive: true });
 
 // ─── Handle viewport height on mobile ───
 
