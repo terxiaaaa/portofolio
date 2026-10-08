@@ -174,6 +174,11 @@ function goTo(id) {
       else MusicTitle.pause();
     }
 
+    if (AboutSlideshow) {
+      if (id === 'about') AboutSlideshow.start();
+      else AboutSlideshow.stop();
+    }
+
     // Update viewport height on mobile after page transition
     if (isMobile) {
       setTimeout(() => {
@@ -620,6 +625,72 @@ const MusicTitle = (() => {
   };
 })();
 
+// ─── About photo slideshow ───
+
+const AboutSlideshow = (() => {
+  const container = $('.about-slideshow');
+  if (!container) return null;
+
+  const dots = $('.about-slide-dots', container);
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let slides = [];
+  let currentSlide = 0;
+  let timer = null;
+  let paused = true;
+
+  function renderDots() {
+    if (!dots) return;
+    dots.replaceChildren();
+    slides.forEach((slide, index) => {
+      const dot = document.createElement('span');
+      dot.className = `about-slide-dot${index === currentSlide ? ' is-active' : ''}`;
+      dots.append(dot);
+    });
+  }
+
+  $$('.about-slide', container).forEach(slide => {
+    slide.addEventListener('error', () => {
+      slide.remove();
+      slides = slides.filter(item => item !== slide);
+      if (currentSlide >= slides.length) currentSlide = 0;
+      renderDots();
+    });
+    slide.addEventListener('load', () => {
+      if (!slides.includes(slide)) slides.push(slide);
+      renderDots();
+    });
+    if (slide.complete && slide.naturalWidth > 0) {
+      slides.push(slide);
+    }
+  });
+
+  renderDots();
+
+  function showNext() {
+    if (paused || reduceMotion || slides.length < 2) return;
+    const previous = slides[currentSlide];
+    currentSlide = (currentSlide + 1) % slides.length;
+    const next = slides[currentSlide];
+    previous.classList.remove('is-active');
+    previous.classList.add('is-fading');
+    next.classList.add('is-active');
+    setTimeout(() => previous.classList.remove('is-fading'), 650);
+    renderDots();
+  }
+
+  function start() {
+    paused = false;
+    if (!timer && !reduceMotion) timer = setInterval(showNext, 4200);
+  }
+
+  function stop() {
+    paused = true;
+    if (timer) { clearInterval(timer); timer = null; }
+  }
+
+  return { start, stop };
+})();
+
 // ─── Visibility change: pause animations when tab hidden ───
 
 document.addEventListener('visibilitychange', () => {
@@ -627,10 +698,12 @@ document.addEventListener('visibilitychange', () => {
     if (TopoAnimation) TopoAnimation.pause();
     if (TypedText) TypedText.pause();
     if (MusicTitle) MusicTitle.pause();
+    if (AboutSlideshow) AboutSlideshow.stop();
   } else {
     if (TopoAnimation) TopoAnimation.resume();
     if (TypedText && current === 'home') TypedText.resume();
     if (MusicTitle && current === 'about') MusicTitle.resume();
+    if (AboutSlideshow && current === 'about') AboutSlideshow.start();
   }
 });
 

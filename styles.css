@@ -954,6 +954,49 @@ nav a.active {
   transition: border-color 0.35s, box-shadow 0.35s;
 }
 
+.about-slideshow {
+  position: relative;
+}
+
+.about-slide {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 650ms ease;
+}
+
+.about-slide.is-active {
+  opacity: 1;
+}
+
+.about-slide.is-fading {
+  opacity: 0;
+}
+
+.about-slide-dots {
+  position: absolute;
+  z-index: 2;
+  bottom: 12px;
+  left: 50%;
+  display: flex;
+  gap: 5px;
+  transform: translateX(-50%);
+}
+
+.about-slide-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(232, 201, 122, 0.35);
+}
+
+.about-slide-dot.is-active {
+  background: var(--accent);
+}
+
 .about-img-box:hover {
   border-color: rgba(232, 160, 48, 0.25);
   box-shadow: 0 8px 32px rgba(232, 160, 48, 0.06);
