@@ -575,7 +575,7 @@ const MusicTitle = (() => {
   }
 
   let idx = 0;
-  let charIndex = phrases[0].length;
+  let charIndex = 0;
   let deleting = false;
   let timer = null;
   let paused = true;
