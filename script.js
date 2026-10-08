@@ -169,6 +169,11 @@ function goTo(id) {
       else TypedText.pause();
     }
 
+    if (MusicTitle) {
+      if (id === 'about') MusicTitle.resume();
+      else MusicTitle.pause();
+    }
+
     // Update viewport height on mobile after page transition
     if (isMobile) {
       setTimeout(() => {
@@ -549,15 +554,83 @@ const TypedText = (() => {
   };
 })();
 
+// ─── Music title typing effect ───
+
+const MusicTitle = (() => {
+  const el = $('#music-heading');
+  if (!el) return null;
+
+  const phrases = [
+    'Songs I keep coming back to',
+    'Songs for hopeless romantics',
+    'Songs for late-night studying',
+    'Songs for getting lost in thought',
+    'Songs for a little workout energy',
+    'Songs for quiet Sunday mornings'
+  ];
+
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    el.textContent = phrases[0];
+    return { pause() {}, resume() {} };
+  }
+
+  let idx = 0;
+  let charIndex = phrases[0].length;
+  let deleting = false;
+  let timer = null;
+  let paused = true;
+
+  const tick = () => {
+    if (paused) return;
+
+    const phrase = phrases[idx];
+    if (!deleting) {
+      charIndex++;
+      el.textContent = phrase.slice(0, charIndex);
+      if (charIndex === phrase.length) {
+        deleting = true;
+        timer = setTimeout(tick, 1900);
+        return;
+      }
+      timer = setTimeout(tick, 88 + Math.random() * 48);
+      return;
+    }
+
+    charIndex--;
+    el.textContent = phrase.slice(0, charIndex);
+    if (charIndex === 0) {
+      deleting = false;
+      idx = (idx + 1) % phrases.length;
+      timer = setTimeout(tick, 360);
+      return;
+    }
+    timer = setTimeout(tick, 48);
+  };
+
+  return {
+    pause() {
+      paused = true;
+      if (timer) { clearTimeout(timer); timer = null; }
+    },
+    resume() {
+      if (!paused) return;
+      paused = false;
+      tick();
+    }
+  };
+})();
+
 // ─── Visibility change: pause animations when tab hidden ───
 
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) {
     if (TopoAnimation) TopoAnimation.pause();
     if (TypedText) TypedText.pause();
+    if (MusicTitle) MusicTitle.pause();
   } else {
     if (TopoAnimation) TopoAnimation.resume();
     if (TypedText && current === 'home') TypedText.resume();
+    if (MusicTitle && current === 'about') MusicTitle.resume();
   }
 });
 
