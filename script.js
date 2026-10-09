@@ -715,7 +715,7 @@ if (isMobile) {
 }
 
 let scrollTimeout;
-window.addEventListener('scroll', () => {
+const handleScroll = () => {
   document.body.classList.add('is-scrolling');
   if (TopoAnimation) TopoAnimation.pause();
   clearTimeout(scrollTimeout);
@@ -723,7 +723,12 @@ window.addEventListener('scroll', () => {
     document.body.classList.remove('is-scrolling');
     if (!document.hidden && TopoAnimation) TopoAnimation.resume();
   }, 140);
-}, { passive: true });
+};
+
+window.addEventListener('scroll', handleScroll, { passive: true });
+$$('.page').forEach(page => {
+  page.addEventListener('scroll', handleScroll, { passive: true });
+});
 
 // ─── Handle viewport height on mobile ───
 

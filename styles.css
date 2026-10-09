@@ -141,6 +141,8 @@ nav a.active {
   height: 100vh;
   height: calc(var(--vh, 1vh) * 100);
   overscroll-behavior: contain;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
 }
 
 .page.active {
@@ -1810,6 +1812,10 @@ nav .nav-pill {
 
   #topo-canvas {
     display: none;
+  }
+
+  .page {
+    scroll-behavior: auto;
   }
 }
 
