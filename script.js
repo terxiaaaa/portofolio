@@ -633,7 +633,8 @@ const AboutSlideshow = (() => {
 
   const dots = $('.about-slide-dots', container);
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let slides = [];
+  const slideElements = $$('.about-slide', container);
+  let slides = [...slideElements];
   let currentSlide = 0;
   let timer = null;
   let paused = true;
@@ -648,20 +649,13 @@ const AboutSlideshow = (() => {
     });
   }
 
-  $$('.about-slide', container).forEach(slide => {
+  slideElements.forEach(slide => {
     slide.addEventListener('error', () => {
       slide.remove();
       slides = slides.filter(item => item !== slide);
       if (currentSlide >= slides.length) currentSlide = 0;
       renderDots();
     });
-    slide.addEventListener('load', () => {
-      if (!slides.includes(slide)) slides.push(slide);
-      renderDots();
-    });
-    if (slide.complete && slide.naturalWidth > 0) {
-      slides.push(slide);
-    }
   });
 
   renderDots();
