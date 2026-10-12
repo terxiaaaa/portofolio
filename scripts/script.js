@@ -174,6 +174,8 @@ function goTo(id) {
       else MusicTitle.pause();
     }
 
+    if (MusicPreview && id !== 'about') MusicPreview.stop();
+
     if (AboutSlideshow) {
       if (id === 'about') AboutSlideshow.start();
       else AboutSlideshow.stop();
@@ -625,6 +627,66 @@ const MusicTitle = (() => {
   };
 })();
 
+// ─── Spotify music previews ───
+
+const MusicPreview = (() => {
+  const grid = $('.music-grid');
+  const player = $('.music-player');
+  const frame = $('iframe', player);
+  const close = $('.music-player-close', player);
+  if (!grid || !player || !frame || !close) return null;
+
+  let activeItem = null;
+
+  function stop() {
+    frame.src = '';
+    player.hidden = true;
+    if (activeItem) {
+      activeItem.classList.remove('is-playing');
+      const button = $('.music-preview', activeItem);
+      if (button) {
+        button.textContent = 'Preview';
+        button.setAttribute('aria-pressed', 'false');
+      }
+      activeItem = null;
+    }
+  }
+
+  function play(item) {
+    if (activeItem === item) {
+      stop();
+      return;
+    }
+
+    if (activeItem) stop();
+    const trackId = item.dataset.trackId;
+    if (!trackId) return;
+
+    activeItem = item;
+    frame.src = `https://open.spotify.com/embed/track/${encodeURIComponent(trackId)}?utm_source=generator&theme=0`;
+    player.hidden = false;
+    item.classList.add('is-playing');
+    const button = $('.music-preview', item);
+    if (button) {
+      button.textContent = 'Playing';
+      button.setAttribute('aria-pressed', 'true');
+    }
+    player.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  grid.addEventListener('click', event => {
+    const button = event.target.closest('.music-preview');
+    if (!button) return;
+    event.preventDefault();
+    event.stopPropagation();
+    play(button.closest('.music-item'));
+  });
+
+  close.addEventListener('click', stop);
+
+  return { stop };
+})();
+
 // ─── About photo slideshow ───
 
 const AboutSlideshow = (() => {
@@ -692,6 +754,7 @@ document.addEventListener('visibilitychange', () => {
     if (TopoAnimation) TopoAnimation.pause();
     if (TypedText) TypedText.pause();
     if (MusicTitle) MusicTitle.pause();
+    if (MusicPreview) MusicPreview.stop();
     if (AboutSlideshow) AboutSlideshow.stop();
   } else {
     if (TopoAnimation) TopoAnimation.resume();
