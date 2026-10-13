@@ -694,19 +694,29 @@ const AboutSlideshow = (() => {
   if (!container) return null;
 
   const dots = $('.about-slide-dots', container);
+  const previousButton = $('.about-slide-prev', container);
+  const nextButton = $('.about-slide-next', container);
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const slideElements = $$('.about-slide', container);
   let slides = [...slideElements];
-  let currentSlide = 0;
+  let currentSlide = slides.findIndex(slide => slide.classList.contains('is-active'));
   let timer = null;
   let paused = true;
+  let resumeOnLeave = false;
+
+  if (currentSlide < 0) currentSlide = 0;
 
   function renderDots() {
     if (!dots) return;
     dots.replaceChildren();
     slides.forEach((slide, index) => {
-      const dot = document.createElement('span');
+      const dot = document.createElement('button');
+      dot.type = 'button';
       dot.className = `about-slide-dot${index === currentSlide ? ' is-active' : ''}`;
+      dot.setAttribute('role', 'tab');
+      dot.setAttribute('aria-label', `Show photo ${index + 1}`);
+      dot.setAttribute('aria-selected', index === currentSlide ? 'true' : 'false');
+      dot.addEventListener('click', () => showSlide(index));
       dots.append(dot);
     });
   }
@@ -715,23 +725,29 @@ const AboutSlideshow = (() => {
     slide.addEventListener('error', () => {
       slide.remove();
       slides = slides.filter(item => item !== slide);
-      if (currentSlide >= slides.length) currentSlide = 0;
+      currentSlide = Math.min(currentSlide, Math.max(slides.length - 1, 0));
       renderDots();
     });
   });
 
   renderDots();
 
-  function showNext() {
-    if (paused || reduceMotion || slides.length < 2) return;
+  function showSlide(index) {
+    if (!slides.length) return;
+    const nextIndex = (index + slides.length) % slides.length;
+    if (nextIndex === currentSlide || slides.length < 2) return;
+
     const previous = slides[currentSlide];
-    currentSlide = (currentSlide + 1) % slides.length;
+    currentSlide = nextIndex;
     const next = slides[currentSlide];
     previous.classList.remove('is-active');
-    previous.classList.add('is-fading');
     next.classList.add('is-active');
-    setTimeout(() => previous.classList.remove('is-fading'), 650);
     renderDots();
+  }
+
+  function showNext() {
+    if (paused || reduceMotion) return;
+    showSlide(currentSlide + 1);
   }
 
   function start() {
@@ -743,6 +759,28 @@ const AboutSlideshow = (() => {
     paused = true;
     if (timer) { clearInterval(timer); timer = null; }
   }
+
+  previousButton?.addEventListener('click', () => showSlide(currentSlide - 1));
+  nextButton?.addEventListener('click', () => showSlide(currentSlide + 1));
+
+  container.addEventListener('mouseenter', () => {
+    if (!paused) {
+      resumeOnLeave = true;
+      stop();
+    }
+  });
+
+  container.addEventListener('mouseleave', () => {
+    if (resumeOnLeave) {
+      resumeOnLeave = false;
+      start();
+    }
+  });
+
+  container.addEventListener('focusin', stop);
+  container.addEventListener('focusout', event => {
+    if (!container.contains(event.relatedTarget)) start();
+  });
 
   return { start, stop };
 })();

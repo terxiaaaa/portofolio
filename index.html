@@ -11,7 +11,8 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>Gorga's Portofolio</title>
-  <link rel="icon" type="image/png" href="https://cdn-icons-png.magnific.com/512/8623/8623523.png">
+  <link rel="icon" type="image/png" sizes="128x128" href="assets/images/site-icon.png">
+  <link rel="apple-touch-icon" sizes="128x128" href="assets/images/site-icon.png">
   <link rel="preconnect" href="https://api.fontshare.com">
   <link rel="preconnect" href="https://cdn-icons-png.magnific.com" crossorigin>
   <link href="https://api.fontshare.com/v2/css?f[]=sentient@200,400,700,200i,400i&display=swap" rel="stylesheet"
@@ -286,12 +287,20 @@
               at <a href="mailto:gorgasagala1@gmail.com">gorgasagala1@gmail.com</a> &#x1F44B;</p>
           </div>
         </div>
-        <div class="about-img-box about-slideshow" aria-label="About photos">
-          <img class="about-slide is-active" src="assets/images/about-photo-1.jpeg" alt="Gorga Sagala" loading="lazy">
-          <img class="about-slide" src="assets/images/about-photo-2.jpeg" alt="" loading="lazy">
-          <img class="about-slide" src="assets/images/about-photo-3.png" alt="" loading="lazy">
-          <img class="about-slide" src="assets/images/about-photo-4.jpeg" alt="" loading="lazy">
-          <div class="about-slide-dots" aria-hidden="true"></div>
+        <div class="about-slideshow" aria-label="About photos" aria-roledescription="carousel">
+          <div class="about-slides">
+            <img src="assets/images/about-photo-1.jpeg" alt="Gorga Sagala" loading="lazy" class="about-slide is-active">
+            <img src="assets/images/about-photo-2.jpeg" alt="Gorga Sagala" loading="lazy" class="about-slide">
+            <img src="assets/images/about-photo-3.jpg" alt="Gorga Sagala" loading="lazy" class="about-slide">
+            <img src="assets/images/about-photo-4.jpeg" alt="Gorga Sagala" loading="lazy" class="about-slide about-slide-portrait-fix">
+          </div>
+          <button class="about-slide-control about-slide-prev" type="button" aria-label="Previous photo">
+            <span aria-hidden="true">‹</span>
+          </button>
+          <button class="about-slide-control about-slide-next" type="button" aria-label="Next photo">
+            <span aria-hidden="true">›</span>
+          </button>
+          <div class="about-slide-dots" role="tablist" aria-label="Choose an about photo"></div>
         </div>
       </div>
       <section class="music-section" aria-labelledby="music-heading">
