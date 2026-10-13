@@ -509,11 +509,7 @@ const TypedText = (() => {
   const texts = [
     "I'm interested in programs.",
     "i love cats <3",
-    "i'm obsessed with Game Modding",
-    "I'm a hopeless romantic too :D",
-    "currently exploring AI & ML",
-    "building things that matter.",
-    "physics meets code."
+    "I'm a hopeless romantic too :D"
   ];
 
   let idx = 0, ci = 0, del = false;
