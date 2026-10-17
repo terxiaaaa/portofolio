@@ -11,6 +11,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>Gorga's Portofolio</title>
+  <link rel="icon" type="image/svg+xml" href="assets/images/site-icon.svg">
   <link rel="icon" type="image/png" sizes="128x128" href="assets/images/site-icon.png">
   <link rel="apple-touch-icon" sizes="128x128" href="assets/images/site-icon.png">
   <link rel="preconnect" href="https://api.fontshare.com">
@@ -165,6 +166,28 @@
       <p class="section-sub">Research notes, essays, and working thoughts.</p>
       <div class="writing-grid" role="list" aria-label="Writing entries">
 
+        <article class="note-card" role="listitem" tabindex="0" data-note="note-gacha">
+          <div class="note-card-banner" aria-hidden="true">
+            <svg class="note-card-banner-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 2L2 7l10 5 10-5-10-5z" />
+              <path d="M2 17l10 5 10-5" />
+              <path d="M2 12l10 5 10-5" />
+            </svg>
+          </div>
+          <div class="note-card-body">
+            <span class="note-card-tag">Proposal</span>
+            <h3 class="note-card-title">Engineered Uncertainty in Gacha Systems</h3>
+            <p class="note-card-excerpt">Proposal KTI: perbandingan komputasional mekanisme pity (Honkai: Star Rail) dan mileage (StarSavior) melalui pemodelan probabilistik dan simulasi Monte Carlo untuk menganalisis peluang perolehan karakter serta distribusi jumlah pull.</p>
+            <div class="note-card-footer" aria-hidden="true">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+              <span>Proposal KTI</span>
+            </div>
+          </div>
+        </article>
+
         <article class="note-card" role="listitem" tabindex="0" data-note="note-template">
           <div class="note-card-banner" aria-hidden="true">
             <svg class="note-card-banner-icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -186,6 +209,211 @@
           </div>
         </article>
 
+      </div>
+    </div>
+
+    <div class="note-overlay" id="note-gacha" role="dialog" aria-modal="true" aria-labelledby="note-gacha-title" hidden>
+      <div class="note-detail">
+        <button class="note-back-btn" onclick="closeNote()" aria-label="Close note and return to writing">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <line x1="19" y1="12" x2="5" y2="12" />
+            <polyline points="12 19 5 12 12 5" />
+          </svg>
+          Back to Writing
+        </button>
+        <span class="note-detail-tag">Draf Proposal KTI</span>
+        <h2 class="note-detail-title" id="note-gacha-title">Komparasi Mekanisme Pity (Honkai: Star Rail) dan Mileage (StarSavior) dengan Simulasi Monte Carlo</h2>
+        <p class="note-detail-meta">Proposal KTI &nbsp;·&nbsp; Data Science &nbsp;·&nbsp; Bahan Diskusi Dosen Pembimbing</p>
+        <div class="note-detail-divider"></div>
+        <div class="note-detail-layout">
+          <div class="note-detail-body">
+
+            <p class="note-quote">Proposal komparasi kuantitatif antara sistem <em>pity</em> (peluang naik bertahap per tarikan) dan <em>mileage</em> (tukar poin pasti) pada gim gacha. Tujuannya memetakan sebaran jumlah pull, peluang dapat target, dan risiko gagal lewat pemodelan stokastik serta simulasi Monte Carlo.</p>
+
+            <p><strong>Catatan Awal:</strong> Tulisan ini masih draf proposal untuk bimbingan KTI. Belum ada angka hasil run simulasi atau klaim kesimpulan. Parameter dan batasan model masih terbuka untuk disesuaikan dengan masukan dosen.</p>
+
+            <h3 class="note-heading">Latar Belakang &amp; Motivasi</h3>
+            <p>Banyak gim digital memakai sistem gacha sebagai mekanisme monetisasi utama, tapi aturan proteksi pemainnya beda-beda. Ada yang memakai <em>soft/hard pity</em> seperti <em>Honkai: Star Rail</em> (HSR)—di mana peluang naik setelah sekian pull gagal—dan ada yang memakai sistem <em>mileage</em> atau <em>spark</em> seperti <em>StarSavior</em>, di mana setiap pull memberi token yang nantinya bisa ditukar langsung dengan karakter target.</p>
+            <p>Secara intuitif pemain sering membandingkan mana yang "lebih ramah", tapi perbandingannya jarang dihitung secara kuantitatif dengan indikator yang setara (misal: median pull, persentil ke-90/95, dan risiko meleset pada bujet tertentu). Sebagai mahasiswa Sains Data, topik ini menarik untuk diuji memakai pemodelan probabilistik dan simulasi stokastik.</p>
+
+            <h3 class="note-heading">Rumusan Masalah</h3>
+            <ul class="note-list">
+              <li>Bagaimana bentuk kurva peluang kumulatif memperoleh karakter target pada sistem pity HSR vs mileage StarSavior?</li>
+              <li>Berapa rata-rata, median, serta persentil ke-90 dan ke-95 jumlah pull yang dihabiskan pemain pada kedua sistem?</li>
+              <li>Bagaimana mekanisme jaminan (50:50 pada HSR) dan batas penukaran mileage memengaruhi risiko gagal pada batas bujet pull tertentu?</li>
+            </ul>
+
+            <h3 class="note-heading">Batasan Masalah</h3>
+            <ul class="note-list">
+              <li>Objek uji dibatasi pada satu banner karakter terbatas (<em>limited rate-up</em>) per masing-masing gim.</li>
+              <li>Kondisi awal diuji dari titik nol: pity counter 0, belum ada status jaminan (<em>off-banner</em>), dan poin mileage 0.</li>
+              <li>Fokus murni pada probabilitas matematis dan distribusi pull, bukan analisis psikologi belanja atau valuasi rupiah/mata uang riil.</li>
+              <li>Data banner HSR memakai dokumentasi resmi HoYoverse. Data StarSavior masih dalam penelaahan sumber resmi StudioBSIDE; parameter yang belum pasti akan dilabeli sebagai asumsi model, bukan fakta resmi.</li>
+            </ul>
+
+            <h3 class="note-heading">Rencana Metodologi</h3>
+            <p>Penelitian dirancang dalam empat tahap kerja:</p>
+            <ul class="note-list">
+              <li><strong>Inventarisasi Aturan Banner:</strong> Mencatat base rate, ambang soft pity, hard pity, mekanisme 50:50, serta rasio konversi mileage ke dalam tabel parameter terverifikasi.</li>
+              <li><strong>Formulasi Model Matematis:</strong> Menyusun model probabilitas kondisional untuk tarikan independen dan <em>state-dependent</em> (pity counter).</li>
+              <li><strong>Simulasi Monte Carlo:</strong> Mengimplementasikan simulasi berbasis Python (100.000 iterasi per skenario) dengan seed acak tercatat agar hasil dapat direproduksi.</li>
+              <li><strong>Analisis Distribusi:</strong> Menghitung nilai mean, median, IQR, persentil ke-90/95 (indikator <em>unlucky tail</em>), dan grafik CDF (<em>Cumulative Distribution Function</em>).</li>
+            </ul>
+
+            <h3 class="note-heading">Rencana Luaran (Deliverables)</h3>
+            <ul class="note-list">
+              <li>Tabel parameter terverifikasi dari kedua gim beserta catatan sumbernya.</li>
+              <li>Skrip simulasi Monte Carlo (Python/Jupyter Notebook) yang terbuka dan bisa di-run ulang.</li>
+              <li>Visualisasi grafik CDF dan perbandingan metrik risiko (median vs P95).</li>
+              <li>Naskah artikel KTI yang siap diajukan untuk telaah lanjutan.</li>
+            </ul>
+
+            <h3 class="note-heading">Poin Diskusi untuk Dosen Pembimbing</h3>
+            <ul class="note-list">
+              <li>Apakah scope komparasi dua gim ini sudah pas untuk artikel KTI tingkat sarjana, atau perlu dipersempit ke satu mekanisme saja?</li>
+              <li>Bagaimana perlakuan terbaik jika dokumentasi resmi StarSavior tidak merinci kurva soft pity secara publik: apakah cukup dimodelkan sebagai <em>flat-rate + hard mileage</em> dengan catatan asumsi eksplisit?</li>
+              <li>Apakah simulasi Monte Carlo perlu divalidasi juga dengan pendekatan rekursi eksak (misal rantai Markov sederhana)?</li>
+            </ul>
+
+            <h3 class="note-heading">Rencana Kerja &amp; Timeline</h3>
+            <ul class="note-list">
+              <li><strong>Tahap 1:</strong> Telaah literatur (paper gacha &amp; modul KTI) + verifikasi parameter resmi.</li>
+              <li><strong>Tahap 2:</strong> Bimbingan draf metodologi ke dosen pembimbing.</li>
+              <li><strong>Tahap 3:</strong> Penulisan skrip simulasi Python + validasi kasus batas (<em>sanity check</em>).</li>
+              <li><strong>Tahap 4:</strong> Olah visualisasi, analisis data, dan penulisan draf artikel KTI.</li>
+            </ul>
+
+          </div>
+
+          <aside class="note-sidebar">
+
+            <div class="ref-section">
+              <div class="ref-section-header">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                </svg>
+                <span class="ref-section-title">Referensi Artikel</span>
+              </div>
+
+              <a class="ref-item" href="https://doi.org/10.3390/sym18061051" target="_blank" rel="noopener noreferrer">
+                <span class="ref-item-num">01</span>
+                <div class="ref-item-info">
+                  <div class="ref-item-title">State-Dependent Asymmetry in Soft-Pity Gacha Waiting-Time Models</div>
+                  <div class="ref-item-source">Hou, Zhu, &amp; Zhang (2026) · Symmetry</div>
+                  <div class="ref-item-relevance">Rujukan utama pemodelan matematis soft pity, distribusi pull, dan kalkulasi rekursif.</div>
+                  <span class="ref-item-status ref-status-verified">TERVERIFIKASI</span>
+                </div>
+              </a>
+
+              <a class="ref-item" href="https://doi.org/10.1016/j.entcom.2025.101044" target="_blank" rel="noopener noreferrer">
+                <span class="ref-item-num">02</span>
+                <div class="ref-item-info">
+                  <div class="ref-item-title">Monetization mechanisms in gacha games: pricing strategies &amp; pity systems</div>
+                  <div class="ref-item-source">Ma, Shao, &amp; Li (2025) · Entertainment Computing</div>
+                  <div class="ref-item-relevance">Rujukan kontekstual desain pity dan persepsi risiko pemain.</div>
+                  <span class="ref-item-status ref-status-verified">TERVERIFIKASI</span>
+                </div>
+              </a>
+
+              <a class="ref-item" href="https://doi.org/10.1016/j.entcom.2025.100988" target="_blank" rel="noopener noreferrer">
+                <span class="ref-item-num">03</span>
+                <div class="ref-item-info">
+                  <div class="ref-item-title">Game-theoretic analysis of traditional song selection rules in rhythm game tournaments</div>
+                  <div class="ref-item-source">Entertainment Computing (2025)</div>
+                  <div class="ref-item-relevance">Analogi metodologis komparasi aturan mekanik dalam gim.</div>
+                  <span class="ref-item-status ref-status-verified">TERVERIFIKASI</span>
+                </div>
+              </a>
+
+              <a class="ref-item" href="https://doi.org/10.1016/j.entcom.2025.100994" target="_blank" rel="noopener noreferrer">
+                <span class="ref-item-num">04</span>
+                <div class="ref-item-info">
+                  <div class="ref-item-title">Storytelling in mobile games: Cross-cultural analysis of monetization</div>
+                  <div class="ref-item-source">Entertainment Computing (2025)</div>
+                  <div class="ref-item-relevance">Rujukan pendukung aspek monetisasi gim mobile.</div>
+                  <span class="ref-item-status ref-status-verified">TERVERIFIKASI</span>
+                </div>
+              </a>
+
+            </div>
+
+            <div class="ref-section">
+              <div class="ref-section-header">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" />
+                </svg>
+                <span class="ref-section-title">Dokumentasi Resmi</span>
+              </div>
+
+              <a class="ref-item" href="https://support.hoyoverse.com/hc/en-us/articles/50913710696217-How-does-the-pity-system-work-for-different-banners-and-reruns" target="_blank" rel="noopener noreferrer">
+                <span class="ref-item-num">01</span>
+                <div class="ref-item-info">
+                  <div class="ref-item-title">How does the pity system work for different banners?</div>
+                  <div class="ref-item-source">HoYoverse Help Center</div>
+                  <div class="ref-item-relevance">Dokumentasi resmi parameter banner dan pity Honkai: Star Rail.</div>
+                  <span class="ref-item-status ref-status-verified">TERVERIFIKASI</span>
+                </div>
+              </a>
+
+              <a class="ref-item" href="https://starsavior.com/en/news/019e86cc-7aa5-74cd-9996-ea1fcbbb07fa" target="_blank" rel="noopener noreferrer">
+                <span class="ref-item-num">02</span>
+                <div class="ref-item-info">
+                  <div class="ref-item-title">StarSavior — Official News &amp; Updates</div>
+                  <div class="ref-item-source">StudioBSIDE</div>
+                  <div class="ref-item-relevance">Rujukan patch resmi StarSavior (perlu verifikasi rincian mileage).</div>
+                  <span class="ref-item-status ref-status-needs-verification">PERLU VERIFIKASI</span>
+                </div>
+              </a>
+
+              <a class="ref-item" href="https://tychara.com/StarSavior/guides/gacha-system" target="_blank" rel="noopener noreferrer">
+                <span class="ref-item-num">03</span>
+                <div class="ref-item-info">
+                  <div class="ref-item-title">Gacha System: Star Savior</div>
+                  <div class="ref-item-source">Tychara (Panduan Komunitas)</div>
+                  <div class="ref-item-relevance">Petunjuk awal parameter komunitas, belum jadi acuan resmi.</div>
+                  <span class="ref-item-status ref-status-needs-verification">PERLU VERIFIKASI</span>
+                </div>
+              </a>
+
+            </div>
+
+            <div class="ref-section">
+              <div class="ref-section-header">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <polygon points="5 3 19 12 5 21 5 3" />
+                </svg>
+                <span class="ref-section-title">Referensi Video</span>
+              </div>
+              <div class="ref-item">
+                <span class="ref-item-num">—</span>
+                <div class="ref-item-info">
+                  <div class="ref-item-title">Video referensi — akan ditambahkan</div>
+                  <div class="ref-item-source">Kanal edukasi / visualisasi simulasi Monte Carlo gacha (tautan menyusul).</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="ref-section">
+              <div class="ref-section-header">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                  <polyline points="14 2 14 8 20 8" />
+                </svg>
+                <span class="ref-section-title">Panduan Penulisan</span>
+              </div>
+              <div class="ref-item">
+                <span class="ref-item-num">—</span>
+                <div class="ref-item-info">
+                  <div class="ref-item-title">Modul &amp; Panduan Format KTI</div>
+                  <div class="ref-item-source">Pedoman tata kalimat, sitasi anti-plagiarisme, dan kerangka artikel jurnal (arsip lokal).</div>
+                  <div class="ref-item-relevance">Pedoman penulisan naskah, bukan sumber data gim.</div>
+                </div>
+              </div>
+            </div>
+
+          </aside>
+        </div>
       </div>
     </div>
 

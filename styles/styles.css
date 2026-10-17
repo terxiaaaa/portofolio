@@ -811,6 +811,70 @@ nav a.active {
   letter-spacing: 0.02em;
 }
 
+.note-detail-body .note-subheading {
+  font-family: 'Sentient', serif;
+  font-size: 16px;
+  font-weight: 400;
+  color: rgba(232, 201, 122, 0.85);
+  margin-top: 24px;
+  margin-bottom: 10px;
+  letter-spacing: 0.02em;
+}
+
+.note-detail-body .note-checklist {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0 22px;
+}
+
+.note-detail-body .note-checklist li {
+  position: relative;
+  padding-left: 28px;
+  margin-bottom: 10px;
+  line-height: 1.7;
+}
+
+.note-detail-body .note-checklist .check-box {
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+  opacity: 0.7;
+  font-size: 14px;
+}
+
+.ref-item-relevance {
+  font-family: 'Times New Roman', serif;
+  font-size: 11px;
+  color: var(--text-faint);
+  line-height: 1.5;
+  margin-top: 4px;
+  font-style: italic;
+}
+
+.ref-item-status {
+  display: inline-block;
+  font-family: 'Sentient', serif;
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-radius: 10px;
+  padding: 2px 8px;
+  margin-top: 6px;
+}
+
+.ref-status-verified {
+  color: #7dcea0;
+  background: rgba(125, 206, 160, 0.1);
+  border: 1px solid rgba(125, 206, 160, 0.2);
+}
+
+.ref-status-needs-verification {
+  color: var(--accent);
+  background: rgba(232, 160, 48, 0.1);
+  border: 1px solid rgba(232, 160, 48, 0.18);
+}
+
 #page-resume {
   align-items: center;
   text-align: center;
@@ -1624,6 +1688,11 @@ nav a.active {
     margin-bottom: 10px;
   }
 
+  .note-detail-body .note-subheading {
+    font-size: 14px;
+    margin-top: 18px;
+  }
+
   .note-detail-body .note-quote {
     padding-left: 14px;
     margin: 20px 0;
@@ -2016,6 +2085,10 @@ nav .nav-pill {
 
   .note-detail-body .note-heading {
     font-size: 15px;
+  }
+
+  .note-detail-body .note-subheading {
+    font-size: 13px;
   }
 
   .about-name {
