@@ -1322,11 +1322,14 @@ nav a.active {
 }
 
 .music-player {
-  margin-top: 18px;
+  grid-column: 1 / -1;
+  width: 100%;
+  height: 226px;
+  margin: 0;
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 12px;
-  background: rgba(8, 7, 4, 0.85);
+  background: #1c3c72;
 }
 
 .music-player-header {
@@ -1359,13 +1362,13 @@ nav a.active {
 #spotify-embed iframe {
   display: block;
   width: 100%;
-  min-height: 152px;
+  height: 226px !important;
   border: 0;
 }
 
 #spotify-embed {
   width: 100%;
-  min-height: 152px;
+  height: 226px;
 }
 
 .music-spotify {

@@ -597,9 +597,7 @@ const MusicPreview = (() => {
   const grid = $('.music-grid');
   const player = $('.music-player');
   const embedTarget = $('#spotify-embed', player);
-  const fallbackFrame = $('iframe', player);
-  const close = $('.music-player-close', player);
-  if (!grid || !player || !close) return null;
+  if (!grid || !player || !embedTarget) return null;
 
   let activeItem = null;
   let embedController = null;
@@ -609,7 +607,7 @@ const MusicPreview = (() => {
     const initialTrackId = '5Enpui55il1ZW0HgwRTSds';
     const options = {
       width: '100%',
-      height: 152,
+      height: 226,
       uri: `spotify:track:${initialTrackId}`
     };
     IFrameAPI.createController(embedTarget, options, (controller) => {
@@ -619,7 +617,7 @@ const MusicPreview = (() => {
         const isPaused = e.data.isPaused;
         const button = $('.music-preview', activeItem);
         if (button) {
-          button.textContent = isPaused ? 'Preview' : 'Playing';
+          button.textContent = isPaused ? 'Play' : 'Pause';
           button.setAttribute('aria-pressed', isPaused ? 'false' : 'true');
         }
       });
@@ -633,18 +631,16 @@ const MusicPreview = (() => {
 
   function stop() {
     player.hidden = true;
+    grid.append(player);
     if (embedController) {
       try { embedController.pause(); } catch (_) {}
     }
-    if (fallbackFrame) {
-      fallbackFrame.src = '';
-      fallbackFrame.hidden = true;
-    }
     if (activeItem) {
       activeItem.classList.remove('is-playing');
+      activeItem.hidden = false;
       const button = $('.music-preview', activeItem);
       if (button) {
-        button.textContent = 'Preview';
+        button.textContent = 'Play';
         button.setAttribute('aria-pressed', 'false');
       }
       activeItem = null;
@@ -656,7 +652,7 @@ const MusicPreview = (() => {
       if (embedController) {
         embedController.togglePlay();
       } else {
-        stop();
+        return;
       }
       return;
     }
@@ -666,12 +662,19 @@ const MusicPreview = (() => {
     if (!trackId) return;
 
     activeItem = item;
+    const rowTop = item.getBoundingClientRect().top;
+    const rowItems = $$('.music-item', grid).filter(song =>
+      Math.abs(song.getBoundingClientRect().top - rowTop) < 2
+    );
+    const rowEnd = rowItems[rowItems.length - 1] || item;
+    grid.insertBefore(player, rowEnd.nextSibling);
     player.hidden = false;
     item.classList.add('is-playing');
+    item.hidden = true;
     const button = $('.music-preview', item);
     if (button) {
-      button.textContent = 'Playing';
-      button.setAttribute('aria-pressed', 'true');
+      button.textContent = 'Play';
+      button.setAttribute('aria-pressed', 'false');
     }
 
     if (embedController) {
@@ -679,12 +682,7 @@ const MusicPreview = (() => {
       embedController.play();
     } else {
       pendingTrackId = trackId;
-      if (fallbackFrame) {
-        fallbackFrame.hidden = false;
-        fallbackFrame.src = `https://open.spotify.com/embed/track/${encodeURIComponent(trackId)}?utm_source=generator&theme=0&autoplay=1`;
-      }
     }
-
     player.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
@@ -694,8 +692,6 @@ const MusicPreview = (() => {
     event.preventDefault();
     play(item);
   });
-
-  close.addEventListener('click', stop);
 
   return { stop };
 })();
