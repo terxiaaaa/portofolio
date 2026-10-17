@@ -6,12 +6,8 @@ let busy = false;
 const $ = (sel, ctx = document) => ctx.querySelector(sel);
 const $$ = (sel, ctx = document) => [...ctx.querySelectorAll(sel)];
 
-// ─── Detect mobile/touch device ───
-
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-
-// ─── Focus Trap (accessibility for modal) ───
 
 function trapFocus(container) {
   const focusable = $$(
@@ -47,8 +43,6 @@ function trapFocus(container) {
 
 let releaseTrap = null;
 
-// ─── Note overlay ───
-
 function openNote(id) {
   const overlay = $(`#${id}`);
   if (!overlay || noteOpen) return;
@@ -58,7 +52,6 @@ function openNote(id) {
   overlay.scrollTop = 0;
   document.body.style.overflow = 'hidden';
 
-  // Trap focus inside the modal
   requestAnimationFrame(() => {
     releaseTrap = trapFocus(overlay);
   });
@@ -68,7 +61,6 @@ function closeNote() {
   const open = $('.note-overlay.open');
   if (!open) return;
 
-  // Release focus trap
   if (releaseTrap) {
     releaseTrap();
     releaseTrap = null;
@@ -84,14 +76,11 @@ function closeNote() {
     noteOpen = false;
     document.body.style.overflow = '';
 
-    // Return focus to the card that opened this note
     const noteId = open.id;
     const trigger = $(`.note-card[data-note="${noteId}"]`);
     if (trigger) trigger.focus();
   }, FADE_MS);
 }
-
-// ─── Nav pill indicator ───
 
 const navPill = $('.nav-pill');
 
@@ -117,12 +106,9 @@ function updatePill(animate = true) {
   }
 }
 
-// Update pill on window resize
 window.addEventListener('resize', () => {
   updatePill(false);
 }, { passive: true });
-
-// ─── Page navigation ───
 
 function goTo(id) {
   if (id === current || busy) return;
@@ -163,7 +149,6 @@ function goTo(id) {
 
     updatePill();
 
-    // Pause typed text when leaving home
     if (TypedText) {
       if (id === 'home') TypedText.resume();
       else TypedText.pause();
@@ -181,7 +166,6 @@ function goTo(id) {
       else AboutSlideshow.stop();
     }
 
-    // Update viewport height on mobile after page transition
     if (isMobile) {
       setTimeout(() => {
         const vh = window.innerHeight * 0.01;
@@ -197,7 +181,6 @@ nav.addEventListener('click', e => {
   if (link) goTo(link.dataset.page);
 });
 
-// Add touch feedback for nav items on mobile
 if (isTouch) {
   $$('nav a').forEach(link => {
     link.addEventListener('touchstart', () => {
@@ -221,7 +204,6 @@ nav.addEventListener('keydown', e => {
     if (link) goTo(link.dataset.page);
   }
 
-  // Arrow key navigation between nav items
   const links = $$('a[data-page]', nav);
   const idx = links.indexOf(e.target);
   if (idx === -1) return;
@@ -235,7 +217,6 @@ nav.addEventListener('keydown', e => {
   }
 });
 
-// Add touch feedback for project and note cards on mobile
 if (isTouch) {
   const addTouchFeedback = (selector) => {
     $$(selector).forEach(card => {
@@ -253,15 +234,12 @@ if (isTouch) {
     });
   };
 
-  // Apply touch feedback after page loads
   window.addEventListener('load', () => {
     addTouchFeedback('.project-card');
     addTouchFeedback('.note-card');
     addTouchFeedback('.portal-btn');
   });
 }
-
-// ─── Writing grid ───
 
 const writingGrid = $('.writing-grid');
 if (writingGrid) {
@@ -278,7 +256,6 @@ if (writingGrid) {
     }
   });
 
-  // Add touch feedback for note cards on mobile
   if (isTouch) {
     $$('.note-card').forEach(card => {
       card.addEventListener('touchstart', () => {
@@ -296,8 +273,6 @@ if (writingGrid) {
   }
 }
 
-// ─── Global keyboard shortcuts ───
-
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && noteOpen) closeNote();
 });
@@ -308,7 +283,6 @@ overlays.forEach(overlay => {
     if (e.target === overlay) closeNote();
   });
 
-  // Touch swipe to close on mobile
   if (isTouch) {
     let startY = 0;
     let startX = 0;
@@ -327,15 +301,12 @@ overlays.forEach(overlay => {
       const diffX = endX - startX;
       const elapsed = Date.now() - startTime;
 
-      // Swipe down to close (minimum 100px, more vertical than horizontal, within 300ms)
       if (diffY > 100 && Math.abs(diffY) > Math.abs(diffX) * 1.5 && elapsed < 300) {
         closeNote();
       }
     }, { passive: true });
   }
 });
-
-// ─── Page load animation ───
 
 const home = $('#page-home');
 window.addEventListener('load', () => {
@@ -345,11 +316,8 @@ window.addEventListener('load', () => {
   home.style.opacity = '1';
   home.style.transform = 'translateY(0)';
 
-  // Position nav pill on load
   updatePill(false);
 });
-
-// ─── Topographic canvas animation ───
 
 const TopoAnimation = (() => {
   const canvas = $('#topo-canvas');
@@ -375,7 +343,6 @@ const TopoAnimation = (() => {
     11: [1, 2], 12: [3, 1], 13: [0, 1], 14: [3, 0]
   };
 
-  // Pre-allocate Z buffer — avoid GC churn every frame
   const Z = new Array(RES);
   for (let j = 0; j < RES; j++) {
     Z[j] = new Float32Array(RES);
@@ -483,7 +450,6 @@ const TopoAnimation = (() => {
     }, isMobile ? 150 : 100);
   }, { passive: true });
 
-  // Also handle orientation change on mobile
   window.addEventListener('orientationchange', () => {
     setTimeout(() => {
       resize();
@@ -499,8 +465,6 @@ const TopoAnimation = (() => {
     resume() { if (!animId) animId = requestAnimationFrame(draw); }
   };
 })();
-
-// ─── Typed text effect ───
 
 const TypedText = (() => {
   const el = $('#typed-text');
@@ -556,8 +520,6 @@ const TypedText = (() => {
     }
   };
 })();
-
-// ─── Music title typing effect ───
 
 const MusicTitle = (() => {
   const el = $('#music-heading');
@@ -623,8 +585,6 @@ const MusicTitle = (() => {
   };
 })();
 
-// ─── Spotify music previews ───
-
 const MusicPreview = (() => {
   const grid = $('.music-grid');
   const player = $('.music-player');
@@ -682,8 +642,6 @@ const MusicPreview = (() => {
 
   return { stop };
 })();
-
-// ─── About photo slideshow ───
 
 const AboutSlideshow = (() => {
   const container = $('.about-slideshow');
@@ -781,8 +739,6 @@ const AboutSlideshow = (() => {
   return { start, stop };
 })();
 
-// ─── Visibility change: pause animations when tab hidden ───
-
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) {
     if (TopoAnimation) TopoAnimation.pause();
@@ -798,10 +754,7 @@ document.addEventListener('visibilitychange', () => {
   }
 });
 
-// ─── Performance optimization for mobile ───
-
 if (isMobile) {
-  // Reduce animation complexity on mobile
   document.documentElement.style.setProperty('--fade', '300ms');
 }
 
@@ -821,33 +774,26 @@ $$('.page').forEach(page => {
   page.addEventListener('scroll', handleScroll, { passive: true });
 });
 
-// ─── Handle viewport height on mobile ───
-
 if (isMobile) {
   const setVH = () => {
     const vh = window.innerHeight * 0.01;
     document.documentElement.style.setProperty('--vh', `${vh}px`);
   };
 
-  // Set initial VH
   setVH();
 
-  // Update on resize (handles address bar show/hide)
   window.addEventListener('resize', setVH, { passive: true });
 
-  // Update on orientation change
   window.addEventListener('orientationchange', () => {
     setTimeout(setVH, 100);
   }, { passive: true });
 
-  // Also update on scroll (for some mobile browsers)
   let scrollTimer;
   window.addEventListener('scroll', () => {
     clearTimeout(scrollTimer);
     scrollTimer = setTimeout(setVH, 100);
   }, { passive: true });
 
-  // Prevent double-tap zoom on mobile
   let lastTouchEnd = 0;
   document.addEventListener('touchend', e => {
     const now = Date.now();

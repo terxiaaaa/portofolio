@@ -1754,8 +1754,6 @@ nav a.active {
   }
 }
 
-/* ─── Staggered entrance animations ─── */
-
 @keyframes fadeSlideUp {
   from {
     opacity: 0;
@@ -1846,8 +1844,6 @@ nav a.active {
   animation: fadeSlideUp 0.5s ease 0.4s both;
 }
 
-/* ─── Tech tags on project cards ─── */
-
 .card-tags {
   display: flex;
   flex-wrap: wrap;
@@ -1869,8 +1865,6 @@ nav a.active {
   white-space: nowrap;
 }
 
-/* ─── Nav pill indicator ─── */
-
 nav .nav-pill {
   position: absolute;
   height: 26px;
@@ -1884,8 +1878,6 @@ nav .nav-pill {
   top: 50%;
   transform: translateY(-50%);
 }
-
-/* ─── Social button glow ─── */
 
 .portal-btn {
   position: relative;
@@ -1906,8 +1898,6 @@ nav .nav-pill {
 .portal-btn:hover::before {
   opacity: 1;
 }
-
-/* ─── Project card image hover overlay ─── */
 
 .card-img {
   position: relative;
@@ -1936,8 +1926,6 @@ nav .nav-pill {
   opacity: 1;
 }
 
-/* ─── Footer separator ─── */
-
 .site-footer::before {
   content: '';
   display: block;
@@ -1946,8 +1934,6 @@ nav .nav-pill {
   background: linear-gradient(90deg, transparent, rgba(232, 201, 122, 0.15), transparent);
   margin: 0 auto 10px;
 }
-
-/* ─── Social portal entrance stagger ─── */
 
 .page.active .portal-btn {
   animation: fadeSlideUp 0.4s ease both;
@@ -1973,8 +1959,6 @@ nav .nav-pill {
   animation-delay: 0.25s;
 }
 
-/* ─── Home elements entrance ─── */
-
 .page.active .home-name {
   animation: fadeSlideUp 0.6s ease 0.1s both;
 }
@@ -1986,8 +1970,6 @@ nav .nav-pill {
 .page.active .typing-wrapper {
   animation: fadeSlideUp 0.5s ease 0.35s both;
 }
-
-/* ─── Smooth card link underline ─── */
 
 .card-link {
   position: relative;
