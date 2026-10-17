@@ -585,8 +585,9 @@
             <span class="music-player-label">Now previewing</span>
             <button class="music-player-close" type="button" aria-label="Close music preview">×</button>
           </div>
+          <div id="spotify-embed"></div>
           <iframe title="Spotify music preview" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-            loading="lazy"></iframe>
+            loading="lazy" hidden></iframe>
         </div>
       </section>
     </div>
@@ -616,6 +617,7 @@
 
   <footer class="site-footer" role="contentinfo">&copy; terxiaaaa</footer>
 
+  <script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
   <script src="scripts/script.js" defer></script>
 </body>
 

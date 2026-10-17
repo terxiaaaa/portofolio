@@ -1351,11 +1351,17 @@ nav a.active {
   color: var(--text);
 }
 
-.music-player iframe {
+.music-player iframe,
+#spotify-embed iframe {
   display: block;
   width: 100%;
   min-height: 152px;
   border: 0;
+}
+
+#spotify-embed {
+  width: 100%;
+  min-height: 152px;
 }
 
 .music-spotify {
