@@ -523,6 +523,10 @@ nav a.active {
   transition: opacity var(--fade) ease;
 }
 
+.note-overlay[hidden] {
+  display: none;
+}
+
 .note-overlay.open {
   opacity: 1;
   pointer-events: all;

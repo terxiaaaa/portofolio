@@ -57,7 +57,7 @@ function openNote(id) {
   });
 }
 
-function closeNote() {
+function closeNote(immediate = false) {
   const open = $('.note-overlay.open');
   if (!open) return;
 
@@ -66,9 +66,7 @@ function closeNote() {
     releaseTrap = null;
   }
 
-  open.style.opacity = '0';
-  open.querySelector('.note-detail').style.transform = 'translateY(18px)';
-  setTimeout(() => {
+  const finishClose = () => {
     open.classList.remove('open');
     open.style.opacity = '';
     open.querySelector('.note-detail').style.transform = '';
@@ -78,8 +76,17 @@ function closeNote() {
 
     const noteId = open.id;
     const trigger = $(`.note-card[data-note="${noteId}"]`);
-    if (trigger) trigger.focus();
-  }, FADE_MS);
+    if (trigger && !immediate) trigger.focus();
+  };
+
+  if (immediate) {
+    finishClose();
+    return;
+  }
+
+  open.style.opacity = '0';
+  open.querySelector('.note-detail').style.transform = 'translateY(18px)';
+  setTimeout(finishClose, FADE_MS);
 }
 
 const navPill = $('.nav-pill');
@@ -112,6 +119,7 @@ window.addEventListener('resize', () => {
 
 function goTo(id) {
   if (id === current || busy) return;
+  if (noteOpen) closeNote(true);
   busy = true;
 
   const outEl = $(`#page-${current}`);
